@@ -19,7 +19,7 @@ WriteHP proto                                   ;顯示血量。
 WriteScore proto                                ;顯示分數。
 enemyDisappear proto, enemyP:coord              ;消去敵方飛機。
 .data
-titleStr byte "Forest Jam",0         ;主控台視窗標題。
+titleStr byte "----- Plane War -----",0         ;主控台視窗標題。
 
 ;初始畫面。
 startLogo0 byte " /$$$$$$$$  /$$$$$$  /$$$$$$$  /$$$$$$$$  /$$$$$$  /$$$$$$$$          /$$$$$  /$$$$$$  /$$      /$$"
@@ -31,13 +31,20 @@ startLogo5 byte "| $$      | $$  | $$| $$  \ $$| $$       /$$  \ $$   | $$      
 startLogo6 byte "| $$      |  $$$$$$/| $$  | $$| $$$$$$$$|  $$$$$$/   | $$         |  $$$$$$/| $$  | $$| $$ \/  | $$"
 startLogo7 byte "|__/       \______/ |__/  |__/|________/ \______/    |__/          \______/ |__/  |__/|__/     |__/"
 startLogo8 byte "###################################################################################################"
-startLogo9 byte "         "
-startLogo10 byte "                       ready to have adventure in Jungle? Please press 's'                              "
-startColor word lengthof startLogo0 DUP (2h)       							;初始畫面顏色。
-startPos COORD <10,10>    													    ;初始畫面初期繪製座標。
+startLogo9 byte "                          --press 'g' to start--                               "
+startLogo10 byte "                      --press 'h' to introduction--                            "
+startColor word lengthof startLogo0 DUP (0Dh)       							;初始畫面顏色。
+startPos COORD <20,10>    													    ;初始畫面初期繪製座標。
 
-												
-score word 1              													;用以敵方飛機在移動第幾次時再出現下一台。
+;遊戲介紹畫面。
+introduction1 byte "how to pilot the airplane:"
+introduction2 byte "left->press 'i', right->press 'p'."
+introduction3 byte "how to fire bullets:"
+introduction4 byte "press 's' for firing bullets."
+introduction5 byte "If you are hit by an enemy bullet, you will lose 100 HP."
+introduction6 byte "please press 'g' to start."
+introductionPos COORD <20,7>													;遊戲介紹畫面初期繪製座標。
+score word 1              														;用以敵方飛機在移動第幾次時再出現下一台。
 
 ;飛機樣式。
 allyPlaneUp BYTE (4)DUP(20h),2Fh,2Bh,5Ch,(4)DUP(20h)
@@ -262,13 +269,100 @@ q:
     .if al=='s'
 		call Clrscr
     jmp start
+    .elseif al=='h'
+        jmp introduction
     .else
         jmp q
     .endif
 	
+	;繪製Introduction。
+    introduction:
+        call Clrscr
+        INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		introductionPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset introduction1,
+		lengthof introduction1,
+		introductionPos,
+		offset bytesWritten
+    inc introductionPos.Y
+    INVOKE sleep,500
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		introductionPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset introduction2,
+		lengthof introduction2,
+		introductionPos,
+		offset bytesWritten
+    add introductionPos.Y, 2
+    INVOKE sleep,500
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		introductionPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset introduction3,
+		lengthof introduction3,
+		introductionPos,
+		offset bytesWritten
+    inc introductionPos.Y
+    INVOKE sleep,500
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		introductionPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset introduction4,
+		lengthof introduction4,
+		introductionPos,
+		offset bytesWritten
+    add introductionPos.Y, 2
+    INVOKE sleep,500
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		introductionPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset introduction5,
+		lengthof introduction5,
+		introductionPos,
+		offset bytesWritten
+    add introductionPos.Y, 3
+    INVOKE sleep,500
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		introductionPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset introduction6,
+		lengthof introduction6,
+		introductionPos,
+		offset bytesWritten
 p:
     call ReadChar                			   ;偵測要不要開始遊戲。
-    .if al=='s'
+    .if al=='g'
 		call Clrscr
     .else
         jmp p
@@ -371,11 +465,11 @@ start:
 
 control:
 
-    .if score>0
+    .if allyScore>=0
 		;若敵軍到最下方，敵軍消失並從任意最上方位置重新出現。
-		.if enemy1Position.Y>22                       
+		.if enemy1Position.Y>22						  ;障礙物碰到最下方後
 			INVOKE enemyDisappear, enemy1Position     ;下方敵軍消失。
-            sub allyScore,1000                        ;分數變回正確分數(enemyDisappear裡會扣1000分)。
+            add allyScore,1000                        ;分數變回正確分數(enemyDisappear裡會扣1000分)。
             call WriteScore
 			mov ax,100
 			call RandomRange
@@ -386,10 +480,10 @@ control:
 		INVOKE EnemyMove,enemy1Position               ;敵軍移動。
         inc enemy1Position.Y
     .endif
-    .if score>4
+    .if allyScore>=10000
         .if enemy2Position.Y>22
 			INVOKE enemyDisappear, enemy2Position
-            sub allyScore,1000
+            add allyScore,1000
             call WriteScore
             mov ax, 100
             call RandomRange
@@ -400,10 +494,10 @@ control:
 		INVOKE EnemyMove,enemy2Position
         inc enemy2Position.Y
     .endif
-    .if score>9
+    .if allyScore>=25000
         .if enemy3Position.Y>22
             INVOKE enemyDisappear, enemy3Position
-            sub allyScore,1000
+            add allyScore,1000
             call WriteScore
 			mov ax, 100
             call RandomRange
@@ -414,10 +508,10 @@ control:
 		INVOKE EnemyMove,enemy3Position
 		inc enemy3Position.Y
     .endif
-    .if score>14
+    .if allyScore>=50000
         .if enemy4Position.Y>22
             INVOKE enemyDisappear, enemy4Position
-            sub allyScore,1000
+            add allyScore,1000
             call WriteScore
 			mov ax, 100
             call RandomRange
@@ -427,34 +521,6 @@ control:
 		.endif
 		INVOKE EnemyMove,enemy4Position
         inc enemy4Position.Y
-    .endif
-    .if score>19
-        .if enemy5Position.Y>22
-            INVOKE enemyDisappear, enemy5Position
-            sub allyScore,1000
-            call WriteScore
-			mov ax, 100
-			call RandomRange
-            add ax,12
-            mov enemy5Position.X,ax
-            mov enemy5Position.Y,0
-        .endif
-		INVOKE EnemyMove,enemy5Position
-        inc enemy5Position.Y
-    .endif
-    .if score>24
-        .if enemy6Position.Y>22
-            INVOKE enemyDisappear, enemy6Position
-            sub allyScore,1000
-            call WriteScore
-			mov ax, 100
-            call RandomRange
-            add ax,12
-            mov enemy6Position.X,ax
-            mov enemy6Position.Y,0
-        .endif
-		INVOKE EnemyMove,enemy6Position
-        inc enemy6Position.Y
     .endif
 	invoke DetectShoot	             				   ;偵測射擊。
 	invoke DetectMove								   ;偵測移動。
@@ -1452,7 +1518,6 @@ EnemyMove proc USES eax ebx ecx edx,
 		offset count
 
 	sub enemyP.Y, 2                      ;敵軍Y座標橋回正確位置。
-	INVOKE EnemyAttack,enemyP.X,enemyP.Y ;呼叫敵人射擊。
     ret
 EnemyMove endp
 
