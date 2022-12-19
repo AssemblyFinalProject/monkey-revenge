@@ -89,19 +89,19 @@ ScorePosition COORD <1,2>                       ;SCORE位置。
 allyScorePosition COORD <7,2>                   ;分數值位置。
 ScoreAttr word 6 DUP(0Ah)                       ;分數顯示顏色。
 
-;結束畫面。
-endLogo0 byte "###############################################################################"
-endLogo1 byte "||==|        |=========|  |========|  |========|  |========|     |=========|  |"
-endLogo2 byte "||  |        |  _____  |  |  ______|  |  ______|  |   __   |     |______   |  |"
-endLogo3 byte "||  |        |  |   |  |  |  |_____   |  |_____   |  |  |  |         ___|  |  |"
-endLogo4 byte "||  |        |  |   |  |  |_____   |  |   _____|  |  |__|  |        |   ___|  |"
-endLogo5 byte "||  |______  |  |___|  |   _____|  |  |  |______  |  ____  |        |__|      |"
-endLogo6 byte "||        |  |         |  |        |  |        |  |  |   \ \         __       |"
-endLogo7 byte "||========|  |=========|  |========|  |========|  |==|    \=\       |__|      |"
-endLogo8 byte "###############################################################################"
-endLogo9 byte "                          --press 'anychar' to end--                           "
-endColor word lengthof endLogo0 DUP (0Dh)
-endPos COORD <20,10>
+
+endLogo0 byte ".-. .-')      ('-.         .-. .-')                  .-')     .-') _       ('-.    _ .-') _   "
+endLogo1 byte "\  ( OO )   _(  OO)        \  ( OO )                ( OO ).  (  OO) )    _(  OO)  ( (  OO) )  "
+endLogo2 byte " ;-----.\  (,------.        ;-----.\   ,--. ,--.   (_)---\_) /     '._  (,------.  \     .'_  "
+endLogo3 byte " | .-.  |   |  .---'        | .-.  |   |  | |  |   /    _ |  |'--...__)  |  .---'  ,`'--..._) "
+endLogo4 byte " | '-' /_)  |  |            | '-' /_)  |  | | .-') \  :` `.  '--.  .--'  |  |      |  |  \  ' "
+endLogo5 byte " | .-. `.  (|  '--.         | .-. `.   |  |_|( OO ) '..`''.)    |  |    (|  '--.   |  |   ' | "
+endLogo6 byte " | |  \  |  |  .--'         | |  \  |  |  | | `-' /.-._)   \    |  |     |  .--'   |  |   / : "
+endLogo7 byte " | '--'  /  |  `---.        | '--'  / ('  '-'(_.-' \       /    |  |     |  `---.  |  '--'  / "
+endLogo8 byte " `------'   `------'        `------'    `-----'     `-----'     `--'     `------'  `-------'  "
+endLogo9 byte "                        Next time be a hunter, don't be a prey again.                          "
+endColor word lengthof endLogo0 DUP (5h)
+endPos COORD <10,10>
 
 .code
 main proc
