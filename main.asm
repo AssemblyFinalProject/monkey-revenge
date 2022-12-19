@@ -19,7 +19,7 @@ WriteHP proto                                   ;顯示血量。
 WriteScore proto                                ;顯示分數。
 enemyDisappear proto, enemyP:coord              ;消去敵方飛機。
 .data
-titleStr byte "----- Plane War -----",0         ;主控台視窗標題。
+titleStr byte "gggg",0         ;主控台視窗標題。
 
 ;初始畫面。
 startLogo0 byte " /$$$$$$$$  /$$$$$$  /$$$$$$$  /$$$$$$$$  /$$$$$$  /$$$$$$$$          /$$$$$  /$$$$$$  /$$      /$$"
