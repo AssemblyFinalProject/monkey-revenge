@@ -19,7 +19,7 @@ WriteHP proto                                   ;顯示血量。
 WriteScore proto                                ;顯示分數。
 enemyDisappear proto, enemyP:coord              ;消去敵方飛機。
 .data
-titleStr byte "gggg",0         ;主控台視窗標題。
+titleStr byte "Forest Jam",0         ;主控台視窗標題。
 
 ;初始畫面。
 startLogo0 byte " /$$$$$$$$  /$$$$$$  /$$$$$$$  /$$$$$$$$  /$$$$$$  /$$$$$$$$          /$$$$$  /$$$$$$  /$$      /$$"
@@ -31,19 +31,11 @@ startLogo5 byte "| $$      | $$  | $$| $$  \ $$| $$       /$$  \ $$   | $$      
 startLogo6 byte "| $$      |  $$$$$$/| $$  | $$| $$$$$$$$|  $$$$$$/   | $$         |  $$$$$$/| $$  | $$| $$ \/  | $$"
 startLogo7 byte "|__/       \______/ |__/  |__/|________/ \______/    |__/          \______/ |__/  |__/|__/     |__/"
 startLogo8 byte "###################################################################################################"
-startLogo9 byte "                          --press 'g' to start--                               "
-startLogo10 byte "                      --press 'h' to introduction--                            "
-startColor word lengthof startLogo0 DUP (0Dh)       							;初始畫面顏色。
-startPos COORD <20,10>    													    ;初始畫面初期繪製座標。
+startLogo9 byte "         "
+startLogo10 byte "                       ready to have adventure in Jungle? Please press 's'                              "
+startColor word lengthof startLogo0 DUP (2h)       							;初始畫面顏色。
+startPos COORD <10,10>    													    ;初始畫面初期繪製座標。
 
-;遊戲介紹畫面。
-introduction1 byte "how to pilot the airplane:"
-introduction2 byte "left->press 'i', right->press 'p'."
-introduction3 byte "how to fire bullets:"
-introduction4 byte "press 's' for firing bullets."
-introduction5 byte "If you are hit by an enemy bullet, you will lose 100 HP."
-introduction6 byte "please press 'g' to start."
-introductionPos COORD <20,7>													;遊戲介紹畫面初期繪製座標。
 score word 1              														;用以敵方飛機在移動第幾次時再出現下一台。
 
 ;飛機樣式。
@@ -269,100 +261,12 @@ q:
     .if al=='s'
 		call Clrscr
     jmp start
-    .elseif al=='h'
-        jmp introduction
     .else
         jmp q
     .endif
-	
-	;繪製Introduction。
-    introduction:
-        call Clrscr
-        INVOKE WriteConsoleOutputAttribute,
-		outputHandle,
-		offset startColor,
-		lengthof startColor,
-		introductionPos,
-		offset count
-    INVOKE WriteConsoleOutputCharacter,
-		outputHandle,
-		offset introduction1,
-		lengthof introduction1,
-		introductionPos,
-		offset bytesWritten
-    inc introductionPos.Y
-    INVOKE sleep,500
-    INVOKE WriteConsoleOutputAttribute,
-		outputHandle,
-		offset startColor,
-		lengthof startColor,
-		introductionPos,
-		offset count
-    INVOKE WriteConsoleOutputCharacter,
-		outputHandle,
-		offset introduction2,
-		lengthof introduction2,
-		introductionPos,
-		offset bytesWritten
-    add introductionPos.Y, 2
-    INVOKE sleep,500
-    INVOKE WriteConsoleOutputAttribute,
-		outputHandle,
-		offset startColor,
-		lengthof startColor,
-		introductionPos,
-		offset count
-    INVOKE WriteConsoleOutputCharacter,
-		outputHandle,
-		offset introduction3,
-		lengthof introduction3,
-		introductionPos,
-		offset bytesWritten
-    inc introductionPos.Y
-    INVOKE sleep,500
-    INVOKE WriteConsoleOutputAttribute,
-		outputHandle,
-		offset startColor,
-		lengthof startColor,
-		introductionPos,
-		offset count
-    INVOKE WriteConsoleOutputCharacter,
-		outputHandle,
-		offset introduction4,
-		lengthof introduction4,
-		introductionPos,
-		offset bytesWritten
-    add introductionPos.Y, 2
-    INVOKE sleep,500
-    INVOKE WriteConsoleOutputAttribute,
-		outputHandle,
-		offset startColor,
-		lengthof startColor,
-		introductionPos,
-		offset count
-    INVOKE WriteConsoleOutputCharacter,
-		outputHandle,
-		offset introduction5,
-		lengthof introduction5,
-		introductionPos,
-		offset bytesWritten
-    add introductionPos.Y, 3
-    INVOKE sleep,500
-    INVOKE WriteConsoleOutputAttribute,
-		outputHandle,
-		offset startColor,
-		lengthof startColor,
-		introductionPos,
-		offset count
-    INVOKE WriteConsoleOutputCharacter,
-		outputHandle,
-		offset introduction6,
-		lengthof introduction6,
-		introductionPos,
-		offset bytesWritten
 p:
     call ReadChar                			   ;偵測要不要開始遊戲。
-    .if al=='g'
+    .if al=='s'
 		call Clrscr
     .else
         jmp p
