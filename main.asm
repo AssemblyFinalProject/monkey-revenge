@@ -4,9 +4,6 @@ main	EQU start@0
 
 .stack 4096
 
-DetectShoot proto								;偵測是否射擊，呼叫BulletShoot。
-BulletShoot proto,planeX:word,planeY:word		;玩家射擊，呼叫BulletMove。
-BulletMove proto								;玩家子彈移動，呼叫DetectMove。
 DetectMove proto								;偵測移動 直接使用 呼叫MovRight,MovLeft。
 MovRight proto									;右移。
 MovLeft proto									;左移。
@@ -426,7 +423,6 @@ control:
 		INVOKE EnemyMove,enemy4Position
         inc enemy4Position.Y
     .endif
-	invoke DetectShoot	             				   ;偵測射擊。
 	invoke DetectMove								   ;偵測移動。
 	jmp control								    	   ;迴圈讓敵人下移。
 
@@ -477,9 +473,7 @@ WriteScore proc
 	ret
 WriteScore endp
 
-endshoot:
-    ret
-BulletShoot endp
+
 
 enemyDisappear proc,
         enemyP:coord
@@ -659,7 +653,6 @@ blink:
 
 	sub allyPosition.Y,3				;y軸調回初始位置。
 
-	invoke DetectShoot
 	invoke DetectMove
 
     invoke Sleep,300
@@ -1294,7 +1287,6 @@ AttackMove proc USES eax ebx ecx edx
 		1,
 		AttackPos,
 		offset count
-	INVOKE DetectShoot
 	INVOKE DetectMove
 	INVOKE Sleep,10
 	
