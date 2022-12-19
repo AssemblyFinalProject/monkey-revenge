@@ -368,7 +368,7 @@ control:
 
     .if allyScore>=0
 		;若敵軍到最下方，敵軍消失並從任意最上方位置重新出現。
-		.if enemy1Position.Y>22						  ;障礙物碰到最下方後
+		.if enemy1Position.Y>24						  ;障礙物碰到最下方後
 			INVOKE enemyDisappear, enemy1Position     ;下方敵軍消失。
             add allyScore,1000                        ;分數變回正確分數(enemyDisappear裡會扣1000分)。
             call WriteScore
@@ -382,7 +382,7 @@ control:
         inc enemy1Position.Y
     .endif
     .if allyScore>=10000
-        .if enemy2Position.Y>22
+        .if enemy2Position.Y>24
 			INVOKE enemyDisappear, enemy2Position
             add allyScore,1000
             call WriteScore
@@ -396,7 +396,7 @@ control:
         inc enemy2Position.Y
     .endif
     .if allyScore>=25000
-        .if enemy3Position.Y>22
+        .if enemy3Position.Y>24
             INVOKE enemyDisappear, enemy3Position
             add allyScore,1000
             call WriteScore
@@ -410,7 +410,7 @@ control:
 		inc enemy3Position.Y
     .endif
     .if allyScore>=50000
-        .if enemy4Position.Y>22
+        .if enemy4Position.Y>24
             INVOKE enemyDisappear, enemy4Position
             add allyScore,1000
             call WriteScore
