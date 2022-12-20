@@ -15,6 +15,7 @@ EnemyRevive proto								;敵方復活。
 WriteHP proto                                   ;顯示血量。
 WriteScore proto                                ;顯示分數。
 enemyDisappear proto, enemyP:coord              ;消去敵方飛機。
+EnemyCrush proto, enemyP:coord					;撞到敵方飛機扣血。
 .data
 titleStr byte "Forest Jam",0         ;主控台視窗標題。
 
@@ -42,7 +43,7 @@ allyPlaneMid2 BYTE 2Fh,(2)DUP(2Dh),7Ch,(3)DUP(20h),7Ch,(2)DUP(2Dh),5Ch
 allyPlaneDown BYTE (2)DUP(20h),2Fh,2Dh,7Ch,3Dh,7Ch,2Dh,5Ch,(2)DUP(20h)
 allyAttr WORD 11 DUP(0Bh)														;飛機顏色。
 allyDisAttr WORD 11 DUP (00h)													;飛機消失顏色。
-allyPosition COORD <40,25>														;飛機初始位置。
+allyPosition COORD <3Ch,25>														;飛機初始位置。
 allyCondition byte 1															;飛機狀態 1為活著,0為死掉復活中。
 allyHP dword 500 		    													;飛機血量。
 allyScore Dword 0																;飛機得分。
@@ -370,7 +371,7 @@ control:
 		;若敵軍到最下方，敵軍消失並從任意最上方位置重新出現。
 		.if enemy1Position.Y>24						  ;障礙物碰到最下方後
 			INVOKE enemyDisappear, enemy1Position     ;下方敵軍消失。
-            add allyScore,1000                        ;分數變回正確分數(enemyDisappear裡會扣1000分)。
+            ;add allyScore,1000                        ;分數變回正確分數(enemyDisappear裡會扣1000分)。
             call WriteScore
 			mov ax,100
 			call RandomRange
@@ -379,6 +380,11 @@ control:
             mov enemy1Position.Y,0                    ;敵軍移到最上方。
         .endif
 		INVOKE EnemyMove,enemy1Position               ;敵軍移動。
+		INVOKE EnemyCrush,enemy1Position               ;判斷有沒有撞擊到。
+		.IF allyCondition == 0
+			mov enemy1Position.X, 60						;若自己呈現無敵(被撞到)，重設敵軍XY
+			mov enemy1Position.Y, 0
+		.ENDIF
         inc enemy1Position.Y
     .endif
     .if allyScore>=10000
@@ -393,6 +399,11 @@ control:
             mov enemy2Position.Y,0
         .endif
 		INVOKE EnemyMove,enemy2Position
+		INVOKE EnemyCrush,enemy2Position               ;判斷有沒有撞擊到。
+		.IF allyCondition == 0
+			mov enemy2Position.X, 70						;若自己呈現無敵(被撞到)，重設敵軍XY
+			mov enemy2Position.Y, 0
+		.ENDIF
         inc enemy2Position.Y
     .endif
     .if allyScore>=25000
@@ -407,6 +418,11 @@ control:
             mov enemy3Position.Y,0
         .endif
 		INVOKE EnemyMove,enemy3Position
+		INVOKE EnemyCrush,enemy3Position               ;判斷有沒有撞擊到。
+		.IF allyCondition == 0
+			mov enemy3Position.X, 80						;若自己呈現無敵(被撞到)，重設敵軍XY
+			mov enemy3Position.Y, 0
+		.ENDIF
 		inc enemy3Position.Y
     .endif
     .if allyScore>=50000
@@ -421,9 +437,15 @@ control:
             mov enemy4Position.Y, 0
 		.endif
 		INVOKE EnemyMove,enemy4Position
+		INVOKE EnemyCrush,enemy4Position               ;判斷有沒有撞擊到。
+		.IF allyCondition == 0
+			mov enemy4Position.X, 50						;若自己呈現無敵(被撞到)，重設敵軍XY
+			mov enemy4Position.Y, 0
+		.ENDIF
         inc enemy4Position.Y
     .endif
 	invoke DetectMove								   ;偵測移動。
+	mov allyCondition, 1								;解除無敵狀態
 	jmp control								    	   ;迴圈讓敵人下移。
 
 main endp
@@ -481,7 +503,9 @@ enemyDisappear proc,
     call WriteScore
 	
 	;若被射中，enemy消失。
+	.IF allyCondition == 1		;沒被打中才執行 dec ，不然擦不掉
 	dec enemyP.Y
+	.ENDIF
 	INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
 		offset enemyDisappearAttr,
@@ -525,8 +549,8 @@ enemyDisappear proc,
 		sizeof enemyBottom,
 		enemyP,
 		offset count
-        mov enemyP.Y,23
-	INVOKE Sleep,8
+        mov enemyP.Y,00h
+        mov enemyP.X,23h
 	ret
 enemyDisappear endp
 
@@ -934,6 +958,9 @@ MovRight proc
 
 	sub allyPosition.Y,3
 	INC allyPosition.X
+	.IF allyPosition.X == 6dh	;如果向右到邊界，則留在原地
+	DEC allyPosition.X
+	.ENDIF
 
 	;重新繪製。
 L5:	INVOKE WriteConsoleOutputAttribute,
@@ -1051,6 +1078,9 @@ MovLeft proc
 
 	sub allyPosition.Y,3
 	DEC allyPosition.X
+	.IF allyPosition.X == 00h	;如果向左到邊界，則留在原地
+	INC allyPosition.X
+	.ENDIF
 
 	;重新繪製。
 L5:	INVOKE WriteConsoleOutputAttribute,
@@ -1308,4 +1338,67 @@ AttackMove proc USES eax ebx ecx edx
 
     ret
 AttackMove endp
+EnemyCrush proc ,enemyP:COORD
+	mov cx, allyPosition.X
+	sub cx, enemyP.X
+	add cx, 11
+	.IF enemyP.Y >= 16h
+		jmp LOO
+	.ELSE
+		jmp endCrush
+	.ENDIF
+LOO:									 ;判斷子彈是否擊中飛機X軸。
+	.if cx == 0ah
+		jmp enddd
+	.endif
+	.if cx == 09h
+		jmp enddd
+	.endif
+	.if cx == 08h
+		jmp enddd
+	.endif
+	.if cx == 07h
+		jmp enddd
+	.endif
+	.if cx == 06h
+		jmp enddd
+	.endif
+	.if cx == 05h
+		jmp enddd
+	.endif
+	.if cx == 04h
+		jmp enddd
+	.endif
+	.if cx == 03h
+		jmp enddd
+	.endif
+	.if cx == 02h
+		jmp enddd
+	.endif
+	.if cx == 01h
+		jmp enddd
+	.endif
+	.if cx == 00h
+		jmp enddd
+	.endif
+	.if cx == 0bh
+		jmp enddd
+	.else
+		jmp endCrush
+	.endif
+enddd:
+		.if allyCondition==1				;進一步判斷飛機是否處於無敵狀態。
+		invoke AllyRevive				;呼叫被擊中閃爍。
+		sub allyHP,100         			;擊中，減少血量。
+		INVOKE WriteHP          		;顯示血量。
+		mov allyCondition, 0			;無敵狀態
+		INVOKE enemyDisappear, enemyP	;敵人消失
+		
+		jmp endCrush
+		.endif
+endCrush:
+    ret
+		
+EnemyCrush ENDP
+
 end main
