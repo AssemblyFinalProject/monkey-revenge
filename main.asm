@@ -37,11 +37,12 @@ startPos COORD <10,10>    													    ;初始畫面初期繪製座標。
 score word 1              														;用以敵方飛機在移動第幾次時再出現下一台。
 
 ;飛機樣式。
-allyPlaneUp BYTE (4)DUP(20h),2Fh,2Bh,5Ch,(4)DUP(20h)
-allyPlaneMid1 BYTE (2)DUP(20h),2Fh,2Dh,7Ch,20h,7Ch,2Dh,5Ch,(2)DUP(20h)
-allyPlaneMid2 BYTE 2Fh,(2)DUP(2Dh),7Ch,(3)DUP(20h),7Ch,(2)DUP(2Dh),5Ch
-allyPlaneDown BYTE (2)DUP(20h),2Fh,2Dh,7Ch,3Dh,7Ch,2Dh,5Ch,(2)DUP(20h)
-allyAttr WORD 11 DUP(0Bh)														;飛機顏色。
+allyPlaneUp BYTE " ! A ! "
+allyPlaneMid1 BYTE "<TTXTT>"
+allyPlaneMid2 BYTE "   I   "
+allyPlaneDown BYTE "  <T>  "
+allyPlaneBlank BYTE "       "													;飛機消失字元
+allyAttr WORD 7 DUP(0Bh)														;飛機顏色。
 allyDisAttr WORD 11 DUP (00h)													;飛機消失顏色。
 allyPosition COORD <3Ch,25>														;飛機初始位置。
 allyCondition byte 1															;飛機狀態 1為活著,0為死掉復活中。
@@ -56,6 +57,7 @@ bulletDisappearAttr word 00h													;子彈消失顏色。
 enemyTop BYTE " ___ "
 enemyBody BYTE "-\*/-"
 enemyBottom BYTE "  *  "
+enemyBlank BYTE "     "							;敵人消失字元
 enemyAttr word 5 DUP(0Ch)						;敵人飛機顏色。
 enemyDisappearAttr word 5 DUP(00h)				;敵人飛機消失顏色。
 enemyPosition COORD <60,0>						;敵人飛機初始位置。
@@ -631,7 +633,7 @@ blink:
 		offset count
     INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset allyPlaneUp,
+		offset allyPlaneBlank,
 		lengthof allyPlaneUp,
 		allyPosition,
 		offset bytesWritten
@@ -644,7 +646,7 @@ blink:
 		offset count
     INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset allyPlaneMid1,
+		offset allyPlaneBlank,
 		lengthof allyPlaneMid1,
 		allyPosition,
 		offset bytesWritten
@@ -657,7 +659,7 @@ blink:
 		offset count
     INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset allyPlaneMid2,
+		offset allyPlaneBlank,
 		lengthof allyPlaneMid2,
 		allyPosition,
 		offset bytesWritten
@@ -670,7 +672,7 @@ blink:
 		offset count
     INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset allyPlaneDown,
+		offset allyPlaneBlank,
 		lengthof allyPlaneDown,
 		allyPosition,
 		offset bytesWritten
@@ -912,7 +914,7 @@ MovRight proc
 		offset count
     INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset allyPlaneUp,
+		offset allyPlaneBlank,
 		lengthof allyPlaneUp,
 		allyPosition,
 		offset bytesWritten
@@ -925,7 +927,7 @@ MovRight proc
 		offset count
     INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset allyPlaneMid1,
+		offset allyPlaneBlank,
 		lengthof allyPlaneMid1,
 		allyPosition,
 		offset bytesWritten
@@ -938,7 +940,7 @@ MovRight proc
 		offset count
     INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset allyPlaneMid2,
+		offset allyPlaneBlank,
 		lengthof allyPlaneMid2,
 		allyPosition,
 		offset bytesWritten
@@ -951,14 +953,14 @@ MovRight proc
 		offset count
     INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset allyPlaneDown,
+		offset allyPlaneBlank,
 		lengthof allyPlaneDown,
 		allyPosition,
 		offset bytesWritten
 
 	sub allyPosition.Y,3
 	INC allyPosition.X
-	.IF allyPosition.X == 6dh	;如果向右到邊界，則留在原地
+	.IF allyPosition.X == 70h	;如果向右到邊界，則留在原地
 	DEC allyPosition.X
 	.ENDIF
 
@@ -1157,7 +1159,7 @@ EnemyMove proc USES eax ebx ecx edx,
 		offset cellsWritten
 	INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset enemyTop,
+		offset enemyBlank,
 		sizeof enemyTop,
 		enemyP,
 		offset count
@@ -1170,7 +1172,7 @@ EnemyMove proc USES eax ebx ecx edx,
 		offset cellsWritten
 	INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset enemyBody,
+		offset enemyBlank,
 		sizeof enemyBody,
 		enemyP,
 		offset count
@@ -1183,7 +1185,7 @@ EnemyMove proc USES eax ebx ecx edx,
 		offset cellsWritten
 	INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset enemyBottom,
+		offset enemyBlank,
 		sizeof enemyBottom,
 		enemyP,
 		offset count
@@ -1341,25 +1343,13 @@ AttackMove endp
 EnemyCrush proc ,enemyP:COORD
 	mov cx, allyPosition.X
 	sub cx, enemyP.X
-	add cx, 11
-	.IF enemyP.Y >= 16h
-		jmp LOO
+	add cx, 7
+	.IF enemyP.Y >= 16h					;敵軍到可以碰到友軍的範圍
+		jmp LOO							;判斷x軸是否有碰到
 	.ELSE
 		jmp endCrush
 	.ENDIF
 LOO:									 ;判斷子彈是否擊中飛機X軸。
-	.if cx == 0ah
-		jmp enddd
-	.endif
-	.if cx == 09h
-		jmp enddd
-	.endif
-	.if cx == 08h
-		jmp enddd
-	.endif
-	.if cx == 07h
-		jmp enddd
-	.endif
 	.if cx == 06h
 		jmp enddd
 	.endif
@@ -1381,7 +1371,7 @@ LOO:									 ;判斷子彈是否擊中飛機X軸。
 	.if cx == 00h
 		jmp enddd
 	.endif
-	.if cx == 0bh
+	.if cx == 07h
 		jmp enddd
 	.else
 		jmp endCrush
