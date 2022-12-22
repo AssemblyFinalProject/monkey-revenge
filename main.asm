@@ -16,6 +16,9 @@ WriteHP proto                                   ;顯示血量。
 WriteScore proto                                ;顯示分數。
 enemyDisappear proto, enemyP:coord              ;消去敵方飛機。
 EnemyCrush proto, enemyP:coord					;撞到敵方飛機扣血。
+bulletMove proto								;子彈移動
+allyAttack proto, enemyP:COORD						;偵測子彈打到與否
+CheckHP proto
 .data
 titleStr byte "Forest Jam",0         ;主控台視窗標題。
 
@@ -48,10 +51,11 @@ allyPosition COORD <3Ch,25>														;飛機初始位置。
 allyCondition byte 1															;飛機狀態 1為活著,0為死掉復活中。
 allyHP dword 500 		    													;飛機血量。
 allyScore Dword 0																;飛機得分。
-bullet byte '8'																	;子彈樣式。
+bullet byte '!'																	;子彈樣式。
 bulletPos COORD <?,?>															;子彈位置。
 bulletAttr word 0Bh																;子彈顏色。
 bulletDisappearAttr word 00h													;子彈消失顏色。
+bulletshot BYTE 0																;子彈有沒有射中，0 = 0， 1 = 有喔
 
 ;敵人樣式。
 enemyTop BYTE " ___ "
@@ -367,13 +371,22 @@ start:
 	mov eax, allyScore
 	call WriteDec
 
-control:
+SetBullet:
 
+	;設定子彈初始位置
+	mov ax, allyPosition.X
+	add ax, 04h
+	mov bulletPos.X, ax
+	mov bx, allyPosition.Y
+	dec bx
+	mov bulletPos.Y, bx
+
+control:
+	
     .if allyScore>=0
 		;若敵軍到最下方，敵軍消失並從任意最上方位置重新出現。
 		.if enemy1Position.Y>24						  ;障礙物碰到最下方後
 			INVOKE enemyDisappear, enemy1Position     ;下方敵軍消失。
-            ;add allyScore,1000                        ;分數變回正確分數(enemyDisappear裡會扣1000分)。
             call WriteScore
 			mov ax,100
 			call RandomRange
@@ -383,9 +396,22 @@ control:
         .endif
 		INVOKE EnemyMove,enemy1Position               ;敵軍移動。
 		INVOKE EnemyCrush,enemy1Position               ;判斷有沒有撞擊到。
+		INVOKE allyAttack, enemy1Position			;判斷有沒有被子彈打到
+		.IF bulletshot == 1							;如果打到，重設XY
+			mov ax,100
+			call RandomRange
+            add ax,12                                 ;防止敵軍從分數、HP的位置出現。
+            mov enemy1Position.X,ax                   ;敵軍X座標設隨機位置。
+            mov enemy1Position.Y,0                    ;敵軍移到最上方。
+			mov bulletshot, 0
+		.ENDIF
 		.IF allyCondition == 0
-			mov enemy1Position.X, 60						;若自己呈現無敵(被撞到)，重設敵軍XY
-			mov enemy1Position.Y, 0
+			mov ax,100
+			call RandomRange
+            add ax,12                                 ;防止敵軍從分數、HP的位置出現。
+            mov enemy1Position.X,ax                   ;敵軍X座標設隨機位置。
+            mov enemy1Position.Y,0                    ;敵軍移到最上方。
+			mov bulletshot, 0
 		.ENDIF
         inc enemy1Position.Y
     .endif
@@ -402,6 +428,15 @@ control:
         .endif
 		INVOKE EnemyMove,enemy2Position
 		INVOKE EnemyCrush,enemy2Position               ;判斷有沒有撞擊到。
+		INVOKE allyAttack, enemy2Position			;判斷有沒有被子彈打到
+		.IF bulletshot == 1							;如果打到，重設Y
+			mov ax, 100
+            call RandomRange
+            add ax,12
+            mov enemy2Position.X,ax
+            mov enemy2Position.Y,0
+			mov bulletshot, 0
+		.ENDIF
 		.IF allyCondition == 0
 			mov enemy2Position.X, 70						;若自己呈現無敵(被撞到)，重設敵軍XY
 			mov enemy2Position.Y, 0
@@ -421,9 +456,22 @@ control:
         .endif
 		INVOKE EnemyMove,enemy3Position
 		INVOKE EnemyCrush,enemy3Position               ;判斷有沒有撞擊到。
+		INVOKE allyAttack, enemy3Position			;判斷有沒有被子彈打到
+		.IF bulletshot == 1							;如果打到，重設Y
+			mov ax, 100
+            call RandomRange
+            add ax,12
+            mov enemy3Position.X,ax
+            mov enemy3Position.Y,0
+			mov bulletshot, 0
+		.ENDIF
 		.IF allyCondition == 0
-			mov enemy3Position.X, 80						;若自己呈現無敵(被撞到)，重設敵軍XY
-			mov enemy3Position.Y, 0
+			mov ax, 100
+            call RandomRange
+            add ax,12
+            mov enemy3Position.X,ax
+            mov enemy3Position.Y,0
+			mov bulletshot, 0
 		.ENDIF
 		inc enemy3Position.Y
     .endif
@@ -440,14 +488,39 @@ control:
 		.endif
 		INVOKE EnemyMove,enemy4Position
 		INVOKE EnemyCrush,enemy4Position               ;判斷有沒有撞擊到。
+		INVOKE allyAttack, enemy4Position			;判斷有沒有被子彈打到
+		.IF bulletshot == 1							;如果打到，重設Y
+			mov ax, 100
+            call RandomRange
+            add ax,12
+            mov enemy4Position.X,ax
+            mov enemy4Position.Y, 0
+			mov bulletshot, 0
+		.ENDIF
 		.IF allyCondition == 0
-			mov enemy4Position.X, 50						;若自己呈現無敵(被撞到)，重設敵軍XY
-			mov enemy4Position.Y, 0
+			mov ax, 100
+            call RandomRange
+            add ax,12
+            mov enemy4Position.X,ax
+            mov enemy4Position.Y, 0
+			mov bulletshot, 0
 		.ENDIF
         inc enemy4Position.Y
     .endif
 	invoke DetectMove								   ;偵測移動。
+
+	.IF bulletPos.Y == 00h
+	INVOKE bulletMove
+	jmp SetBullet
+	.ELSE
+	INVOKE bulletMove
+	.ENDIF
+
+	dec bulletPos.Y										;子彈上移
+
+
 	mov allyCondition, 1								;解除無敵狀態
+
 	jmp control								    	   ;迴圈讓敵人下移。
 
 main endp
@@ -501,7 +574,7 @@ WriteScore endp
 
 enemyDisappear proc,
         enemyP:coord
-    add allyScore,1000
+    ;add allyScore,1000
     call WriteScore
 	
 	;若被射中，enemy消失。
@@ -742,9 +815,16 @@ blink:
 
 	sub allyPosition.Y,3				;y軸調回初始位置。
 
+    mov allyCondition,1					;設定飛機無敵狀態。
+					
+    ret
+
+AllyRevive endp
+
+CheckHP PROC
+
 ;判斷HP是否為0，若是則繪製結束畫面。
-.if allyHP==0
-theend:
+.if allyHP == 0
 
 	call Clrscr
 
@@ -877,16 +957,10 @@ theend:
 		lengthof endLogo9,
 		endPos,
 		offset bytesWritten
-
-call WaitMsg
-exit
-.else
-keepgo:
-    mov allyCondition,1					;設定飛機無敵狀態。
-.endif					
-    ret
-
-AllyRevive endp
+	call WaitMsg
+	exit
+	.endif
+CheckHP ENDP
 
 ;偵測玩家移動。
 DetectMove proc
@@ -1300,6 +1374,7 @@ endddd:
 		jmp endAttack
 	.endif
 endAttack:
+	INVOKE CheckHP
     ret
 EnemyAttack endp
 
@@ -1336,24 +1411,43 @@ AttackMove proc USES eax ebx ecx edx
 		AttackPos,
 		offset count
 
-    inc AttackPos.Y				;增加子彈Y軸，往下飛。
+    inc AttackPos.Y				;增加子彈Y軸，往下飛
 
     ret
 AttackMove endp
+
 EnemyCrush proc ,enemyP:COORD
 	mov cx, allyPosition.X
 	sub cx, enemyP.X
-	add cx, 7
+	add cx, 07d
 	.IF enemyP.Y >= 16h					;敵軍到可以碰到友軍的範圍
 		jmp LOO							;判斷x軸是否有碰到
 	.ELSE
 		jmp endCrush
 	.ENDIF
 LOO:									 ;判斷子彈是否擊中飛機X軸。
-	.if cx == 06h
+	.if cx == 05h
 		jmp enddd
 	.endif
-	.if cx == 05h
+	.if cx == 08h
+		jmp enddd
+	.endif
+	.if cx == 09h
+		jmp enddd
+	.endif
+	.if cx == 09h
+		jmp enddd
+	.endif
+	.if cx == 0ah
+		jmp enddd
+	.endif
+	.if cx == 0bh
+		jmp enddd
+	.endif
+	.if cx == 0ch
+		jmp enddd
+	.endif
+	.if cx == 07h
 		jmp enddd
 	.endif
 	.if cx == 04h
@@ -1371,7 +1465,7 @@ LOO:									 ;判斷子彈是否擊中飛機X軸。
 	.if cx == 00h
 		jmp enddd
 	.endif
-	.if cx == 07h
+	.if cx == 06h
 		jmp enddd
 	.else
 		jmp endCrush
@@ -1380,6 +1474,7 @@ enddd:
 		.if allyCondition==1				;進一步判斷飛機是否處於無敵狀態。
 		invoke AllyRevive				;呼叫被擊中閃爍。
 		sub allyHP,100         			;擊中，減少血量。
+		INVOKE CheckHP
 		INVOKE WriteHP          		;顯示血量。
 		mov allyCondition, 0			;無敵狀態
 		INVOKE enemyDisappear, enemyP	;敵人消失
@@ -1388,7 +1483,98 @@ enddd:
 		.endif
 endCrush:
     ret
-		
 EnemyCrush ENDP
+
+;子彈移動
+bulletMove PROC
+	;上移子彈Y，擦除舊子彈
+	inc bulletPos.Y
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset bulletDisappearAttr,
+		lengthof bulletDisappearAttr,
+		bulletPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset bullet,
+		lengthof bullet,
+		bulletPos,
+		offset bytesWritten
+	;下移子彈Y，劃出新子彈
+	dec bulletPos.Y
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset bulletAttr,
+		lengthof bulletAttr,
+		bulletPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset bullet,
+		lengthof bullet,
+		bulletPos,
+		offset bytesWritten
+	.IF bulletPos.Y == 00h
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset bulletDisappearAttr,
+		lengthof bulletDisappearAttr,
+		bulletPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset bullet,
+		lengthof bullet,
+		bulletPos,
+		offset bytesWritten
+	.ENDIF
+	ret
+bulletMove ENDP
+
+;子彈是否打到敵軍
+allyAttack PROC USES eax ebx ecx, enemyP:COORD
+	mov cx, bulletPos.X
+	sub cx, enemyP.X
+	mov ax, enemyP.Y
+	mov bx, bulletPos.Y
+	.IF ax == bx
+		jmp LOO							;判斷Y軸是否有碰到
+	.ELSE
+		jmp endAllyAttack
+	.ENDIF
+LOO:									 ;判斷子彈是否擊中敵軍X軸。
+	.if cx == 05h
+		jmp enddd
+	.endif
+	.if cx == 04h
+		jmp enddd
+	.endif
+	.if cx == 03h
+		jmp enddd
+	.endif
+	.if cx == 02h
+		jmp enddd
+	.endif
+	.if cx == 01h
+		jmp enddd
+	.endif
+	.if cx == 00h
+		jmp enddd
+	.else
+		jmp endAllyAttack
+	.endif
+enddd:
+		add allyScore,1000         	;擊中，加分。
+		INVOKE WriteScore
+		inc enemyP.Y
+		INVOKE enemyDisappear, enemyP	;敵人消失
+		mov bulletshot, 01h
+		jmp endAllyAttack
+endAllyAttack:
+    ret
+allyAttack ENDP
+
+
 
 end main
