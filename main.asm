@@ -387,10 +387,10 @@ SetBullet:
 
 	;設定子彈初始位置
 	mov ax, allyPosition.X
-	add ax, 04h
+	add ax, 03h
 	mov bulletPos.X, ax
 	mov bx, allyPosition.Y
-	dec bx
+	sub bx, 02h
 	mov bulletPos.Y, bx
 
 control:
@@ -1588,11 +1588,19 @@ bulletMove ENDP
 allyAttack PROC USES eax ebx ecx, enemyP:COORD
 	mov cx, bulletPos.X
 	sub cx, enemyP.X
-	inc cx
 	mov ax, enemyP.Y
 	mov bx, bulletPos.Y
 	.IF ax == bx
+		jmp LOO
+	.ENDIF
+	dec bx
+	.IF ax == bx
 		jmp LOO							;判斷Y軸是否有碰到
+	.ENDIF
+	inc bx
+	inc bx
+	.IF ax == bx
+		jmp LOO
 	.ELSE
 		jmp endAllyAttack
 	.ENDIF
@@ -1629,7 +1637,6 @@ endAllyAttack:
 allyAttack ENDP
 
 HPBagDisappear PROC, HPBagP:COORD
-	call WriteHP
 	
 	INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
@@ -1650,7 +1657,19 @@ HPBagDisappear ENDP
 
 BagMove PROC, HPBagP:COORD
 	INVOKE Sleep,15
-	INVOKE HPBagDisappear, HPBagP
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset HPBagDisappearAttr,
+		sizeof HPBag,
+		HPBagP,
+		offset cellsWritten
+
+	INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset HPBagDis,
+		sizeof HPBag,
+		HPBagP,
+		offset count
 	inc HPBagPos.Y
 	INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
