@@ -17,8 +17,12 @@ WriteScore proto                                ;顯示分數。
 enemyDisappear proto, enemyP:coord              ;消去敵方飛機。
 EnemyCrush proto, enemyP:coord					;撞到敵方飛機扣血。
 bulletMove proto								;子彈移動
-allyAttack proto, enemyP:COORD						;偵測子彈打到與否
-CheckHP proto
+allyAttack proto, enemyP:COORD					;偵測子彈打到與否
+CheckHP proto									;偵測生命值是否歸零
+HPBagDisappear proto, HPBagP:COORD				;消去HPBag
+BagMove proto, HPBagP:COORD						;HPBag移動
+BagCrush proto, HPBagP:COORD					;偵測是否
+
 .data
 titleStr byte "Forest Jam",0         ;主控台視窗標題。
 
@@ -95,6 +99,14 @@ Scorew BYTE "SCORE:"
 ScorePosition COORD <1,2>                       ;SCORE位置。
 allyScorePosition COORD <7,2>                   ;分數值位置。
 ScoreAttr word 6 DUP(0Ah)                       ;分數顯示顏色。
+
+HPBag BYTE "+HP+"								;醫療包樣式
+HPBagPos COORD <60,0>							;醫療包位置
+HPBagAttr WORD 4 DUP (0Ah)						;醫療包顏色
+HPBagDis BYTE "    "						;醫療包消失樣式
+HPBagDisappearAttr WORD 4 DUP (00h)				;醫療包消失顏色
+PutHPBag BYTE 00h								;當 PutHPBag == 05h 時落下(每五回合)
+Healed BYTE 00h									;是否吃到HPBag
 
 
 endLogo0 byte ".-. .-')      ('-.         .-. .-')                  .-')     .-') _       ('-.    _ .-') _   "
@@ -393,9 +405,49 @@ control:
             add ax,12                                 ;防止敵軍從分數、HP的位置出現。
             mov enemy1Position.X,ax                   ;敵軍X座標設隨機位置。
             mov enemy1Position.Y,0                    ;敵軍移到最上方。
+			inc PutHPBag
         .endif
-		INVOKE EnemyMove,enemy1Position               ;敵軍移動。
-		INVOKE EnemyCrush,enemy1Position               ;判斷有沒有撞擊到。
+
+		.IF HPBagPos.Y > 24
+			INVOKE HPBagDisappear, HPBagPos
+			mov ax,100
+			call RandomRange
+			add ax,12                           ;防止醫療包從分數、HP的位置出現。
+			mov HPBagPos.X,ax                   ;醫療包X座標設隨機位置。
+			mov HPBagPos.Y,0                    ;醫療包移到最上方。
+			mov PutHPBag, 00h
+		.ENDIF
+
+		.IF PutHPBag == 05h
+			INVOKE WriteConsoleOutputAttribute,
+				outputHandle,
+				offset HPBagAttr,
+				lengthof HPBagAttr,
+				HPBagPos,
+				offset bytesWritten
+			INVOKE WriteConsoleOutputCharacter,
+				outputHandle,
+				offset HPBag,
+				lengthof HPBag,
+				HPBagPos,
+				offset count
+			INVOKE BagMove, HPBagPos
+			INVOKE BagCrush, HPBagPos
+			.IF Healed == 01h
+				mov ax,100
+				call RandomRange
+				add ax,12                           ;防止醫療包從分數、HP的位置出現。
+				mov HPBagPos.X,ax                   ;醫療包X座標設隨機位置。
+				mov HPBagPos.Y,0                    ;醫療包移到最上方。
+				mov PutHPBag, 00h
+				mov Healed, 00h
+			.ENDIF
+			
+			INVOKE HPBagDisappear, HPBagPos
+		.ENDIF
+
+		INVOKE EnemyMove,enemy1Position             ;敵軍移動。
+		INVOKE EnemyCrush,enemy1Position            ;判斷有沒有撞擊到。
 		INVOKE allyAttack, enemy1Position			;判斷有沒有被子彈打到
 		.IF bulletshot == 1							;如果打到，重設XY
 			mov ax,100
@@ -411,14 +463,13 @@ control:
             add ax,12                                 ;防止敵軍從分數、HP的位置出現。
             mov enemy1Position.X,ax                   ;敵軍X座標設隨機位置。
             mov enemy1Position.Y,0                    ;敵軍移到最上方。
-			mov allyCondition, 1								;解除無敵狀態
+			mov allyCondition, 1					  ;解除無敵狀態
 		.ENDIF
         inc enemy1Position.Y
     .endif
     .if allyScore>=10000
         .if enemy2Position.Y>24
 			INVOKE enemyDisappear, enemy2Position
-            add allyScore,1000
             call WriteScore
             mov ax, 100
             call RandomRange
@@ -427,7 +478,7 @@ control:
             mov enemy2Position.Y,0
         .endif
 		INVOKE EnemyMove,enemy2Position
-		INVOKE EnemyCrush,enemy2Position               ;判斷有沒有撞擊到。
+		INVOKE EnemyCrush,enemy2Position            ;判斷有沒有撞擊到。
 		INVOKE allyAttack, enemy2Position			;判斷有沒有被子彈打到
 		.IF bulletshot == 1							;如果打到，重設Y
 			mov ax, 100
@@ -450,7 +501,6 @@ control:
     .if allyScore>=25000
         .if enemy3Position.Y>24
             INVOKE enemyDisappear, enemy3Position
-            add allyScore,1000
             call WriteScore
 			mov ax, 100
             call RandomRange
@@ -459,7 +509,7 @@ control:
             mov enemy3Position.Y,0
         .endif
 		INVOKE EnemyMove,enemy3Position
-		INVOKE EnemyCrush,enemy3Position               ;判斷有沒有撞擊到。
+		INVOKE EnemyCrush,enemy3Position            ;判斷有沒有撞擊到。
 		INVOKE allyAttack, enemy3Position			;判斷有沒有被子彈打到
 		.IF bulletshot == 1							;如果打到，重設Y
 			mov ax, 100
@@ -482,7 +532,6 @@ control:
     .if allyScore>=50000
         .if enemy4Position.Y>24
             INVOKE enemyDisappear, enemy4Position
-            add allyScore,1000
             call WriteScore
 			mov ax, 100
             call RandomRange
@@ -491,7 +540,7 @@ control:
             mov enemy4Position.Y, 0
 		.endif
 		INVOKE EnemyMove,enemy4Position
-		INVOKE EnemyCrush,enemy4Position               ;判斷有沒有撞擊到。
+		INVOKE EnemyCrush,enemy4Position            ;判斷有沒有撞擊到。
 		INVOKE allyAttack, enemy4Position			;判斷有沒有被子彈打到
 		.IF bulletshot == 1							;如果打到，重設Y
 			mov ax, 100
@@ -520,9 +569,9 @@ control:
 	INVOKE bulletMove
 	.ENDIF
 
-	dec bulletPos.Y										;子彈上移
+	dec bulletPos.Y									;子彈上移
 
-	jmp control								    	   ;迴圈讓敵人下移。
+	jmp control								    	;迴圈讓敵人下移。
 
 main endp
 
@@ -965,7 +1014,7 @@ CheckHP ENDP
 
 ;偵測玩家移動。
 DetectMove proc
-    INVOKE Sleep,15
+    INVOKE Sleep,10
     call ReadKey
     mov inputMov,al
 
@@ -1579,6 +1628,104 @@ endAllyAttack:
     ret
 allyAttack ENDP
 
+HPBagDisappear PROC, HPBagP:COORD
+	call WriteHP
+	
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset HPBagDisappearAttr,
+		sizeof HPBag,
+		HPBagP,
+		offset cellsWritten
 
+	INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset HPBagDis,
+		sizeof HPBag,
+		HPBagP,
+		offset count
 
+	ret
+HPBagDisappear ENDP
+
+BagMove PROC, HPBagP:COORD
+	INVOKE Sleep,15
+	INVOKE HPBagDisappear, HPBagP
+	inc HPBagPos.Y
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset HPBagAttr,
+		lengthof HPBagAttr,
+		HPBagPos,
+		offset bytesWritten
+	INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset HPBag,
+		lengthof HPBag,
+		HPBagPos,
+		offset count
+	ret
+BagMove ENDP
+
+BagCrush PROC, HPBagP:COORD
+	mov cx, allyPosition.X
+	sub cx, HPBagP.X
+	add cx, 07d
+	.IF HPBagP.Y >= 16h					;HPBag到可以碰到友軍的範圍
+		jmp LOO							;判斷x軸是否有碰到
+	.ELSE
+		jmp endCrush
+	.ENDIF
+	LOO:									 ;判斷HPBag是否擊中飛機X軸。
+		.if cx == 05h
+			jmp enddd
+		.endif
+		.if cx == 08h
+			jmp enddd
+		.endif
+		.if cx == 09h
+			jmp enddd
+		.endif
+		.if cx == 09h
+			jmp enddd
+		.endif
+		.if cx == 0ah
+			jmp enddd
+		.endif
+		.if cx == 0bh
+			jmp enddd
+		.endif
+		.if cx == 07h
+			jmp enddd
+		.endif
+		.if cx == 04h
+			jmp enddd
+		.endif
+		.if cx == 03h
+			jmp enddd
+		.endif
+		.if cx == 02h
+			jmp enddd
+		.endif
+		.if cx == 01h
+			jmp enddd
+		.endif
+		.if cx == 00h
+			jmp enddd
+		.endif
+		.if cx == 06h
+			jmp enddd
+		.else
+			jmp endCrush
+		.endif
+	enddd:
+			add allyHP,100         			;吃到，增加血量。
+			INVOKE WriteHP          		;顯示血量。
+			mov Healed, 01h					;無敵狀態
+			INVOKE HPBagDisappear, HPBagP	;敵人消失
+		
+			jmp endCrush
+	endCrush:
+		ret
+BagCrush  ENDP
 end main
