@@ -411,7 +411,7 @@ control:
             add ax,12                                 ;防止敵軍從分數、HP的位置出現。
             mov enemy1Position.X,ax                   ;敵軍X座標設隨機位置。
             mov enemy1Position.Y,0                    ;敵軍移到最上方。
-			mov bulletshot, 0
+			mov allyCondition, 1								;解除無敵狀態
 		.ENDIF
         inc enemy1Position.Y
     .endif
@@ -438,8 +438,12 @@ control:
 			mov bulletshot, 0
 		.ENDIF
 		.IF allyCondition == 0
-			mov enemy2Position.X, 70						;若自己呈現無敵(被撞到)，重設敵軍XY
-			mov enemy2Position.Y, 0
+			mov ax, 100
+            call RandomRange
+            add ax,12
+            mov enemy2Position.X,ax
+            mov enemy2Position.Y,0
+			mov allyCondition, 1								;解除無敵狀態
 		.ENDIF
         inc enemy2Position.Y
     .endif
@@ -471,7 +475,7 @@ control:
             add ax,12
             mov enemy3Position.X,ax
             mov enemy3Position.Y,0
-			mov bulletshot, 0
+			mov allyCondition, 1								;解除無敵狀態
 		.ENDIF
 		inc enemy3Position.Y
     .endif
@@ -503,7 +507,7 @@ control:
             add ax,12
             mov enemy4Position.X,ax
             mov enemy4Position.Y, 0
-			mov bulletshot, 0
+			mov allyCondition, 1								;解除無敵狀態
 		.ENDIF
         inc enemy4Position.Y
     .endif
@@ -517,9 +521,6 @@ control:
 	.ENDIF
 
 	dec bulletPos.Y										;子彈上移
-
-
-	mov allyCondition, 1								;解除無敵狀態
 
 	jmp control								    	   ;迴圈讓敵人下移。
 
@@ -972,6 +973,8 @@ DetectMove proc
 		INVOKE MovLeft
 	.elseif inputMov=='p'
 		INVOKE MovRight
+	.elseif inputMov=='n'
+		add allyScore, 10000
 	.endif
     ret
 DetectMove endp
@@ -1536,6 +1539,7 @@ bulletMove ENDP
 allyAttack PROC USES eax ebx ecx, enemyP:COORD
 	mov cx, bulletPos.X
 	sub cx, enemyP.X
+	inc cx
 	mov ax, enemyP.Y
 	mov bx, bulletPos.Y
 	.IF ax == bx
