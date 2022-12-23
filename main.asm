@@ -1086,8 +1086,8 @@ MovRight proc
 
 	sub allyPosition.Y,3
 	add allyPosition.X,2
-	.IF allyPosition.X == 70h	;如果向右到邊界，則留在原地
-	DEC allyPosition.X
+	.IF allyPosition.X == 6eh	;如果向右到邊界，則留在原地
+	sub allyPosition.X,2
 	.ENDIF
 
 	;重新繪製。
@@ -1206,8 +1206,8 @@ MovLeft proc
 
 	sub allyPosition.Y,3
 	sub allyPosition.X,2
-	.IF allyPosition.X == 00h	;如果向左到邊界，則留在原地
-	INC allyPosition.X
+	.IF allyPosition.X == 0ah	;如果向左到邊界，則留在原地
+	add allyPosition.X,2
 	.ENDIF
 
 	;重新繪製。
