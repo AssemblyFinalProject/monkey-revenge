@@ -45,10 +45,10 @@ startLogo15 byte "  |   |   ||     ||  |  ||     \|   [_ |___, |    |    \ |   [
 startLogo16 byte "  |   |   ||     ||  |  ||  .  ||     ||     |    |  .  \|     | \   / |     ||  |  ||     ||     |"
 startLogo17 byte "  |___|___| \___/ |__|__||__|\_||_____||____/     |__|\_||_____|  \_/  |_____||__|__||___,_||_____|"
 startLogo18 byte "                                                                                                   "
-startLogo19 byte "                               ready to revernge? Please press 's'                                 "
-startColor word lengthof startLogo0 DUP (2h)       							;初始畫面顏色。
+startLogo19 byte "                               準備報復佛祖了嗎? Please press 's'                                  "
+startColor word lengthof startLogo0 DUP (0Eh)       							;初始畫面顏色。
+startColor2 word lengthof startLogo0 DUP (0Bh)       							;初始字體顏色。
 startPos COORD <10,5>    													    ;初始畫面初期繪製座標。;初始畫面變數 monkey revenge
-
 score word 1              														;用以敵方飛機在移動第幾次時再出現下一台。
 
 ;飛機樣式。
@@ -148,6 +148,8 @@ main proc
     mov outputHandle, eax
 	
 	;繪製Startlogo(初始畫面)。
+   ;==============================================================================================
+	;繪製Startlogo(初始畫面)。 Line 132-274
     INVOKE WriteConsoleOutputAttribute,            
 		outputHandle,
 		offset startColor,
@@ -293,8 +295,8 @@ main proc
 	inc startPos.Y
     INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
-		offset startColor,
-		lengthof startColor,
+		offset startColor2,
+		lengthof startColor2,
 		startPos,
 		offset count
     INVOKE WriteConsoleOutputCharacter,
@@ -306,8 +308,8 @@ main proc
 	inc startPos.Y
     INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
-		offset startColor,
-		lengthof startColor,
+		offset startColor2,
+		lengthof startColor2,
 		startPos,
 		offset count
     INVOKE WriteConsoleOutputCharacter,
@@ -319,8 +321,8 @@ main proc
 	inc startPos.Y
     INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
-		offset startColor,
-		lengthof startColor,
+		offset startColor2,
+		lengthof startColor2,
 		startPos,
 		offset count
     INVOKE WriteConsoleOutputCharacter,
@@ -332,8 +334,8 @@ main proc
 	inc startPos.Y
     INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
-		offset startColor,
-		lengthof startColor,
+		offset startColor2,
+		lengthof startColor2,
 		startPos,
 		offset count
     INVOKE WriteConsoleOutputCharacter,
@@ -345,8 +347,8 @@ main proc
 	inc startPos.Y
     INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
-		offset startColor,
-		lengthof startColor,
+		offset startColor2,
+		lengthof startColor2,
 		startPos,
 		offset count
     INVOKE WriteConsoleOutputCharacter,
@@ -358,8 +360,8 @@ main proc
 	inc startPos.Y
     INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
-		offset startColor,
-		lengthof startColor,
+		offset startColor2,
+		lengthof startColor2,
 		startPos,
 		offset count
     INVOKE WriteConsoleOutputCharacter,
@@ -371,8 +373,8 @@ main proc
 	inc startPos.Y
     INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
-		offset startColor,
-		lengthof startColor,
+		offset startColor2,
+		lengthof startColor2,
 		startPos,
 		offset count
     INVOKE WriteConsoleOutputCharacter,
@@ -384,8 +386,8 @@ main proc
 	inc startPos.Y
     INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
-		offset startColor,
-		lengthof startColor,
+		offset startColor2,
+		lengthof startColor2,
 		startPos,
 		offset count
     INVOKE WriteConsoleOutputCharacter,
@@ -397,8 +399,8 @@ main proc
 	inc startPos.Y
     INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
-		offset startColor,
-		lengthof startColor,
+		offset startColor2,
+		lengthof startColor2,
 		startPos,
 		offset count
     INVOKE WriteConsoleOutputCharacter,
@@ -407,6 +409,7 @@ main proc
 		lengthof startLogo19,
 		startPos,
 		offset bytesWritten
+;==============================================================================================
 q:
     call ReadChar                			 ;偵測要開始遊戲還是看介紹。
     .if al=='s'
