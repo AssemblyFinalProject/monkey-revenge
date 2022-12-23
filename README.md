@@ -41,6 +41,7 @@
 22/12/23 林晉宇
 1. 猴子移動超過邊界 ([已修](https://github.com/AssemblyFinalProject/forest-jam/commit/776da09d941a5854bd910da38b196349044269a6))
 2. 猴子殘影 ([已修](https://github.com/AssemblyFinalProject/forest-jam/commit/3e41e29f3ff7ca7848e3c82ebde7d2751f27f400))
+3. 修改logo -> [Monkey Revenge](https://github.com/AssemblyFinalProject/monky-revenge/commit/0969c521f925007f1af3aef2fb91575d5c373397)
 
 ## 已知Bug
 1. HP包閃爍
