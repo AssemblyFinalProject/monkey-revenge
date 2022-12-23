@@ -44,11 +44,11 @@ startPos COORD <10,10>    													    ;初始畫面初期繪製座標。
 score word 1              														;用以敵方飛機在移動第幾次時再出現下一台。
 
 ;飛機樣式。
-allyPlaneUp BYTE "     __"
-allyPlaneMid1 BYTE "w  c(..)o" 
-allyPlaneMid2 BYTE " \__(-)"
-allyPlaneDown BYTE "    /(_)__)"
-allyPlaneBlank BYTE " "													;飛機消失字元
+allyPlaneUp BYTE    "     __      "
+allyPlaneMid1 BYTE  "w  c(..)o    " 
+allyPlaneMid2 BYTE  " \__(-)      "
+allyPlaneDown BYTE  "    /(_)__)  "
+allyPlaneBlank BYTE "             "													;飛機消失字元
 allyAttr WORD 15 DUP(0Bh)														;飛機顏色。
 allyDisAttr WORD 15 DUP (00h)												;飛機消失顏色。
 allyPosition COORD <3Ch,25>														;飛機初始位置。
