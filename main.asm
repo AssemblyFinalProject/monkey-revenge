@@ -117,18 +117,28 @@ PutHPBag BYTE 00h								;當 PutHPBag == 05h 時落下(每五回合)
 Healed BYTE 00h									;是否吃到HPBag
 
 
-endLogo0 byte ".-. .-')      ('-.         .-. .-')                  .-')     .-') _       ('-.    _ .-') _   "
-endLogo1 byte "\  ( OO )   _(  OO)        \  ( OO )                ( OO ).  (  OO) )    _(  OO)  ( (  OO) )  "
-endLogo2 byte " ;-----.\  (,------.        ;-----.\   ,--. ,--.   (_)---\_) /     '._  (,------.  \     .'_  "
-endLogo3 byte " | .-.  |   |  .---'        | .-.  |   |  | |  |   /    _ |  |'--...__)  |  .---'  ,`'--..._) "
-endLogo4 byte " | '-' /_)  |  |            | '-' /_)  |  | | .-') \  :` `.  '--.  .--'  |  |      |  |  \  ' "
-endLogo5 byte " | .-. `.  (|  '--.         | .-. `.   |  |_|( OO ) '..`''.)    |  |    (|  '--.   |  |   ' | "
-endLogo6 byte " | |  \  |  |  .--'         | |  \  |  |  | | `-' /.-._)   \    |  |     |  .--'   |  |   / : "
-endLogo7 byte " | '--'  /  |  `---.        | '--'  / ('  '-'(_.-' \       /    |  |     |  `---.  |  '--'  / "
-endLogo8 byte " `------'   `------'        `------'    `-----'     `-----'     `--'     `------'  `-------'  "
-endLogo9 byte "                        Next time be a hunter, don't be a prey again.                          "
-endColor word lengthof endLogo0 DUP (5h)
-endPos COORD <10,10>
+endLogo0 byte "                                  _"
+endLogo1 byte "                               _ooOoo_"
+endLogo2 byte "                              o8888888o"
+endLogo3 byte "                              88"" . ""88"
+endLogo4 byte "                              (| -_- |)"
+endLogo5 byte "                              O\  =  /O"
+endLogo6 byte "                           ____/`---'\____"
+endLogo7 byte "                         .'  \\|     |//  `."
+endLogo8 byte "                        /  \\|||  :  |||//  \"
+endLogo9 byte "                       /  _||||| -:- |||||_  \"
+endlogo10 byte "                       |   | \\\  -  /'| |   |"
+endlogo11 byte "                       | \_|  `\`---'//  |_/ |"
+endlogo12 byte "                       \  .-\__ `-. -'__/-.  /"
+endlogo13 byte "                     ___`. .'  /--.--\  `. .'___"
+endlogo14 byte "       _           ."""" '<  `.___\_<|>_/___.' _> \""""."
+endlogo15 byte "     c  ""}          | | :  `- \`. ;`. _/; .'/ /  .' ; |"
+endlogo16 byte "\_    /  \/        \  \ `-.   \_\_`. _.'_/_/  -' _.' /"
+endlogo17 byte "==\_|   |=========`-.`___`-.__\ \___  /__.-'_.'_.-'================"
+endlogo18 byte " "
+endlogo19 byte "               You are caught by Buddha! God bless you."
+endColor word lengthof endLogo17 DUP (0eh)
+endPos COORD <20,5>
 
 .code
 main proc
@@ -1120,7 +1130,7 @@ CheckHP PROC
 		endPos,
 		offset bytesWritten
     inc endPos.Y
-    INVOKE WriteConsoleOutputAttribute,
+	INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
 		offset endColor,
 		lengthof endColor,
@@ -1130,6 +1140,130 @@ CheckHP PROC
 		outputHandle,
 		offset endLogo9,
 		lengthof endLogo9,
+		endPos,
+		offset bytesWritten
+    inc endPos.Y
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset endColor,
+		lengthof endColor,
+		endPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset endLogo10,
+		lengthof endLogo10,
+		endPos,
+		offset bytesWritten
+    inc endPos.Y
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset endColor,
+		lengthof endColor,
+		endPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset endLogo11,
+		lengthof endLogo11,
+		endPos,
+		offset bytesWritten
+    inc endPos.Y
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset endColor,
+		lengthof endColor,
+		endPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset endLogo12,
+		lengthof endLogo12,
+		endPos,
+		offset bytesWritten
+    inc endPos.Y
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset endColor,
+		lengthof endColor,
+		endPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset endLogo13,
+		lengthof endLogo13,
+		endPos,
+		offset bytesWritten
+    inc endPos.Y
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset endColor,
+		lengthof endColor,
+		endPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset endLogo14,
+		lengthof endLogo14,
+		endPos,
+		offset bytesWritten
+    inc endPos.Y
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset endColor,
+		lengthof endColor,
+		endPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset endLogo15,
+		lengthof endLogo15,
+		endPos,
+		offset bytesWritten
+    inc endPos.Y
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset endColor,
+		lengthof endColor,
+		endPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset endLogo16,
+		lengthof endLogo16,
+		endPos,
+		offset bytesWritten
+    inc endPos.Y
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset endColor,
+		lengthof endColor,
+		endPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset endLogo17,
+		lengthof endLogo17,
+		endPos,
+		offset bytesWritten
+    inc endPos.Y
+	INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset endColor,
+		lengthof endColor,
+		endPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset endLogo18,
+		lengthof endLogo18,
+		endPos,
+		offset bytesWritten
+    inc endPos.Y
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset endLogo19,
+		lengthof endLogo19,
 		endPos,
 		offset bytesWritten
 	call WaitMsg
