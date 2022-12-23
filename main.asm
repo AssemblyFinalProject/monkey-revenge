@@ -44,29 +44,29 @@ startPos COORD <10,10>    													    ;初始畫面初期繪製座標。
 score word 1              														;用以敵方飛機在移動第幾次時再出現下一台。
 
 ;飛機樣式。
-allyPlaneUp BYTE " ! A ! "
-allyPlaneMid1 BYTE "<TTXTT>"
-allyPlaneMid2 BYTE "   I   "
-allyPlaneDown BYTE "  <T>  "
-allyPlaneBlank BYTE "       "													;飛機消失字元
-allyAttr WORD 7 DUP(0Bh)														;飛機顏色。
-allyDisAttr WORD 11 DUP (00h)													;飛機消失顏色。
+allyPlaneUp BYTE "     __"
+allyPlaneMid1 BYTE "w  c(..)o" 
+allyPlaneMid2 BYTE " \__(-)"
+allyPlaneDown BYTE "    /(_)__)"
+allyPlaneBlank BYTE " "													;飛機消失字元
+allyAttr WORD 15 DUP(0Bh)														;飛機顏色。
+allyDisAttr WORD 15 DUP (00h)												;飛機消失顏色。
 allyPosition COORD <3Ch,25>														;飛機初始位置。
 allyCondition byte 1															;飛機狀態 1為活著,0為死掉復活中。
 allyHP dword 500 		    													;飛機血量。
 allyScore Dword 0																;飛機得分。
-bullet byte '!'																	;子彈樣式。
+bullet byte '('																	;子彈樣式。
 bulletPos COORD <?,?>															;子彈位置。
 bulletAttr word 0Bh																;子彈顏色。
 bulletDisappearAttr word 00h													;子彈消失顏色。
 bulletshot BYTE 0																;子彈有沒有射中，0 = 0， 1 = 有喔
 
 ;敵人樣式。
-enemyTop BYTE " ___ "
-enemyBody BYTE "-\*/-"
-enemyBottom BYTE "  *  "
-enemyBlank BYTE "     "							;敵人消失字元
-enemyAttr word 5 DUP(0Ch)						;敵人飛機顏色。
+enemyTop BYTE "  _=_"
+enemyBody BYTE "q(-_-)p"
+enemyBottom BYTE "'_\|/_`"
+enemyBlank BYTE "    "							;敵人消失字元
+enemyAttr word 20 DUP(0Ch)						;敵人飛機顏色。
 enemyDisappearAttr word 5 DUP(00h)				;敵人飛機消失顏色。
 enemyPosition COORD <60,0>						;敵人飛機初始位置。
 enemy1Position COORD <60,0>
@@ -387,10 +387,10 @@ SetBullet:
 
 	;設定子彈初始位置
 	mov ax, allyPosition.X
-	add ax, 03h
+	;add ax, 03h
 	mov bulletPos.X, ax
 	mov bx, allyPosition.Y
-	sub bx, 02h
+	sub bx, 01h
 	mov bulletPos.Y, bx
 
 control:
@@ -1085,7 +1085,7 @@ MovRight proc
 		offset bytesWritten
 
 	sub allyPosition.Y,3
-	INC allyPosition.X
+	add allyPosition.X,2
 	.IF allyPosition.X == 70h	;如果向右到邊界，則留在原地
 	DEC allyPosition.X
 	.ENDIF
@@ -1205,7 +1205,7 @@ MovLeft proc
 		offset bytesWritten
 
 	sub allyPosition.Y,3
-	DEC allyPosition.X
+	sub allyPosition.X,2
 	.IF allyPosition.X == 00h	;如果向左到邊界，則留在原地
 	INC allyPosition.X
 	.ENDIF
