@@ -40,7 +40,8 @@
 
 10PM
 
-1. 修正佛祖殘影(藍色線條和猴子經過會有佛祖出現)
+1. 修正佛祖殘影 (藍色線條和猴子經過會有佛祖出現)
+2. 修正分數超過65000就會沒敵人
 
 22/12/23 林晉宇
 1. 猴子移動超過邊界 ([已修](https://github.com/AssemblyFinalProject/forest-jam/commit/776da09d941a5854bd910da38b196349044269a6))
@@ -49,7 +50,7 @@
 
 ## 已知Bug
 1. HP包閃爍
-2. 分數超過65000就會沒敵人
+2. 分數超過65000就會沒敵人 (已修)
 3. 猴子移動超過邊界 ([已修](https://github.com/AssemblyFinalProject/forest-jam/commit/776da09d941a5854bd910da38b196349044269a6))
 4. 猴子殘影 ([已修](https://github.com/AssemblyFinalProject/forest-jam/commit/3e41e29f3ff7ca7848e3c82ebde7d2751f27f400))
-5. 佛祖殘影(已修)
+5. 佛祖殘影 (已修)
