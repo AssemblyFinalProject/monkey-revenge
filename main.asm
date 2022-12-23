@@ -142,7 +142,7 @@ endPos COORD <20,5>
 
 .code
 main proc
-
+	call Randomize
 	INVOKE SetConsoleTitle, offset titleStr        ;設定主控台視窗標題。
 	INVOKE GetStdHandle, STD_OUTPUT_HANDLE         
     mov outputHandle, eax
@@ -538,7 +538,7 @@ control:
 		.if enemy1Position.Y>24						  ;障礙物碰到最下方後
 			INVOKE enemyDisappear, enemy1Position     ;下方敵軍消失。
             call WriteScore
-			mov ax,100
+			mov eax, 100
 			call RandomRange
             add ax,12                                 ;防止敵軍從分數、HP的位置出現。
             mov enemy1Position.X,ax                   ;敵軍X座標設隨機位置。
@@ -548,7 +548,7 @@ control:
 
 		.IF HPBagPos.Y > 24
 			INVOKE HPBagDisappear, HPBagPos
-			mov ax,100
+			mov eax, 100
 			call RandomRange
 			add ax,12                           ;防止醫療包從分數、HP的位置出現。
 			mov HPBagPos.X,ax                   ;醫療包X座標設隨機位置。
@@ -572,7 +572,7 @@ control:
 			INVOKE BagMove, HPBagPos
 			INVOKE BagCrush, HPBagPos
 			.IF Healed == 01h
-				mov ax,100
+				mov eax,100
 				call RandomRange
 				add ax,12                           ;防止醫療包從分數、HP的位置出現。
 				mov HPBagPos.X,ax                   ;醫療包X座標設隨機位置。
@@ -588,7 +588,7 @@ control:
 		INVOKE EnemyCrush,enemy1Position            ;判斷有沒有撞擊到。
 		INVOKE allyAttack, enemy1Position			;判斷有沒有被子彈打到
 		.IF bulletshot == 1							;如果打到，重設XY
-			mov ax,100
+			mov eax,100
 			call RandomRange
             add ax,12                                 ;防止敵軍從分數、HP的位置出現。
             mov enemy1Position.X,ax                   ;敵軍X座標設隨機位置。
@@ -596,7 +596,7 @@ control:
 			mov bulletshot, 0
 		.ENDIF
 		.IF allyCondition == 0
-			mov ax,100
+			mov eax,100
 			call RandomRange
             add ax,12                                 ;防止敵軍從分數、HP的位置出現。
             mov enemy1Position.X,ax                   ;敵軍X座標設隨機位置。
@@ -609,7 +609,7 @@ control:
         .if enemy2Position.Y>24
 			INVOKE enemyDisappear, enemy2Position
             call WriteScore
-            mov ax, 100
+            mov eax, 100
             call RandomRange
             add ax,12
             mov enemy2Position.X,ax
@@ -619,7 +619,7 @@ control:
 		INVOKE EnemyCrush,enemy2Position            ;判斷有沒有撞擊到。
 		INVOKE allyAttack, enemy2Position			;判斷有沒有被子彈打到
 		.IF bulletshot == 1							;如果打到，重設Y
-			mov ax, 100
+			mov eax, 100
             call RandomRange
             add ax,12
             mov enemy2Position.X,ax
@@ -627,7 +627,7 @@ control:
 			mov bulletshot, 0
 		.ENDIF
 		.IF allyCondition == 0
-			mov ax, 100
+			mov eax, 100
             call RandomRange
             add ax,12
             mov enemy2Position.X,ax
@@ -640,7 +640,7 @@ control:
         .if enemy3Position.Y>24
             INVOKE enemyDisappear, enemy3Position
             call WriteScore
-			mov ax, 100
+			mov eax, 100
             call RandomRange
             add ax,12
             mov enemy3Position.X,ax
@@ -650,7 +650,7 @@ control:
 		INVOKE EnemyCrush,enemy3Position            ;判斷有沒有撞擊到。
 		INVOKE allyAttack, enemy3Position			;判斷有沒有被子彈打到
 		.IF bulletshot == 1							;如果打到，重設Y
-			mov ax, 100
+			mov eax, 100
             call RandomRange
             add ax,12
             mov enemy3Position.X,ax
@@ -658,7 +658,7 @@ control:
 			mov bulletshot, 0
 		.ENDIF
 		.IF allyCondition == 0
-			mov ax, 100
+			mov eax, 100
             call RandomRange
             add ax,12
             mov enemy3Position.X,ax
@@ -671,7 +671,7 @@ control:
         .if enemy4Position.Y>24
             INVOKE enemyDisappear, enemy4Position
             call WriteScore
-			mov ax, 100
+			mov eax, 100
             call RandomRange
             add ax,12
             mov enemy4Position.X,ax
@@ -681,7 +681,7 @@ control:
 		INVOKE EnemyCrush,enemy4Position            ;判斷有沒有撞擊到。
 		INVOKE allyAttack, enemy4Position			;判斷有沒有被子彈打到
 		.IF bulletshot == 1							;如果打到，重設Y
-			mov ax, 100
+			mov eax, 100
             call RandomRange
             add ax,12
             mov enemy4Position.X,ax
@@ -689,7 +689,7 @@ control:
 			mov bulletshot, 0
 		.ENDIF
 		.IF allyCondition == 0
-			mov ax, 100
+			mov eax, 100
             call RandomRange
             add ax,12
             mov enemy4Position.X,ax
