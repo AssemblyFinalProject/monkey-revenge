@@ -136,7 +136,7 @@ endlogo15 byte "     c  ""}          | | :  `- \`. ;`. _/; .'/ /  .' ; |"
 endlogo16 byte "\_    /  \/        \  \ `-.   \_\_`. _.'_/_/  -' _.' /"
 endlogo17 byte "==\_|   |=========`-.`___`-.__\ \___  /__.-'_.'_.-'================"
 endlogo18 byte " "
-endlogo19 byte "               You are caught by Buddha! God bless you."
+endlogo19 byte "                   你被佛祖抓到了! God bless you."
 endColor word lengthof endLogo17 DUP (0eh)
 endPos COORD <20,5>
 
