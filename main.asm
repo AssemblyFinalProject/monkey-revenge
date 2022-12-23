@@ -70,12 +70,12 @@ bulletDisappearAttr word 00h													;子彈消失顏色。
 bulletshot BYTE 0																;子彈有沒有射中，0 = 0， 1 = 有喔
 
 ;敵人樣式。
-enemyTop BYTE "  _=_"
+enemyTop BYTE "  _=_  "
 enemyBody BYTE "q(-_-)p"
 enemyBottom BYTE "'_\|/_`"
-enemyBlank BYTE "    "							;敵人消失字元
-enemyAttr word 20 DUP(0Ch)						;敵人飛機顏色。
-enemyDisappearAttr word 5 DUP(00h)				;敵人飛機消失顏色。
+enemyBlank BYTE "       "							;敵人消失字元
+enemyAttr word 7 DUP(0Ch)						;敵人飛機顏色。
+enemyDisappearAttr word 7 DUP(00h)				;敵人飛機消失顏色。
 enemyPosition COORD <60,0>						;敵人飛機初始位置。
 enemy1Position COORD <60,0>
 enemy2Position COORD <40,0>
@@ -778,7 +778,7 @@ enemyDisappear proc,
 
 	INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset enemyTop,
+		offset enemyBlank,
 		sizeof enemyTop,
 		enemyP,
 		offset count
@@ -793,7 +793,7 @@ enemyDisappear proc,
 
 	INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset enemyBody,
+		offset enemyBlank,
 		sizeof enemyBody,
 		enemyP,
 		offset count
@@ -808,7 +808,7 @@ enemyDisappear proc,
 
 	INVOKE WriteConsoleOutputCharacter,
 		outputHandle,
-		offset enemyBottom,
+		offset enemyBlank,
 		sizeof enemyBottom,
 		enemyP,
 		offset count
@@ -1917,7 +1917,7 @@ HPBagDisappear PROC, HPBagP:COORD
 	ret
 HPBagDisappear ENDP
 
-BagMove PROC, HPBagP:COORD
+BagMove PROC USES eax ebx ecx edx, HPBagP:COORD
 	INVOKE Sleep,15
 	INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
