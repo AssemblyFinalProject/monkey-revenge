@@ -26,20 +26,28 @@ BagCrush proto, HPBagP:COORD					;偵測是否
 .data
 titleStr byte "Forest Jam",0         ;主控台視窗標題。
 
-;初始畫面。
-startLogo0 byte " /$$$$$$$$  /$$$$$$  /$$$$$$$  /$$$$$$$$  /$$$$$$  /$$$$$$$$          /$$$$$  /$$$$$$  /$$      /$$"
-startLogo1 byte "| $$_____/ /$$__  $$| $$__  $$| $$_____/ /$$__  $$|__  $$__/         |__  $$ /$$__  $$| $$$    /$$$"
-startLogo2 byte "| $$      | $$  \ $$| $$  \ $$| $$      | $$  \__/   | $$               | $$| $$  \ $$| $$$$  /$$$$"
-startLogo3 byte "| $$$$$   | $$  | $$| $$$$$$$/| $$$$$   |  $$$$$$    | $$               | $$| $$$$$$$$| $$ $$/$$ $$"
-startLogo4 byte "| $$__/   | $$  | $$| $$__  $$| $$__/    \____  $$   | $$          /$$  | $$| $$__  $$| $$  $$$| $$"
-startLogo5 byte "| $$      | $$  | $$| $$  \ $$| $$       /$$  \ $$   | $$         | $$  | $$| $$  | $$| $$\  $ | $$"
-startLogo6 byte "| $$      |  $$$$$$/| $$  | $$| $$$$$$$$|  $$$$$$/   | $$         |  $$$$$$/| $$  | $$| $$ \/  | $$"
-startLogo7 byte "|__/       \______/ |__/  |__/|________/ \______/    |__/          \______/ |__/  |__/|__/     |__/"
-startLogo8 byte "###################################################################################################"
-startLogo9 byte "         "
-startLogo10 byte "                       ready to have adventure in Jungle? Please press 's'                              "
+startLogo0 byte  "             _      `-._     `-.     `.   \      :      /   .'     .-'     _.-'      _             "
+startLogo1 byte  "              `--._     `-._    `-.    `.  `.    :    .'  .'    .-'    _.-'     _.--'              "
+startLogo2 byte  "                   `--._    `-._   `-.   `.  \   :   /  .'   .-'   _.-'    _.--'                   "
+startLogo3 byte  "             `--.__     `--._   `-._  `-.  `. `. : .' .'  .-'  _.-'   _.--'     __.--'             "
+startLogo4 byte  "             __    `--.__    `--._  `-._ `-. `. \:/ .' .-' _.-'  _.--'    __.--'    __             "
+startLogo5 byte  "               `--..__   `--.__   `--._ `-._`-.`_=_'.-'_.-' _.--'   __.--'   __..--'               "
+startLogo6 byte  "             --..__   `--..__  `--.__  `--._`-q(-_-)p-'_.--'  __.--'  __..--'   __..--             "
+startLogo7 byte  "                   ``--..__  `--..__ `--.__ `-'_) (_`-' __.--' __..--'  __..--''                   "
+startLogo8 byte  "             ...___        ``--..__ `--..__`--/__/  \--'__..--' __..--''        ___...             "
+startLogo9 byte  "                   ```---...___    ``--..__`_(<_   _/)_'__..--''    ___...---'''                   "
+startLogo10 byte "             ```-----....._____```---...___(__\_\_|_/__)___...---'''_____.....-----'''             "
+startLogo11 byte "   ___ ___   ___   ____   __  _    ___  __ __      ____     ___  __ __    ___  ____    ____    ___ "
+startLogo12 byte "  |   |   | /   \ |    \ |  |/ ]  /  _]|  |  |    |    \   /  _]|  |  |  /  _]|    \  /    |  /  _]"
+startLogo13 byte "  | _   _ ||     ||  _  ||  ' /  /  [_ |  |  |    |  D  ) /  [_ |  |  | /  [_ |  _  ||   __| /  [_ "
+startLogo14 byte "  |  \_/  ||  O  ||  |  ||    \ |    _]|  ~  |    |    / |    _]|  |  ||    _]|  |  ||  |  ||    _]"
+startLogo15 byte "  |   |   ||     ||  |  ||     \|   [_ |___, |    |    \ |   [_ |  :  ||   [_ |  |  ||  |_ ||   [_ "
+startLogo16 byte "  |   |   ||     ||  |  ||  .  ||     ||     |    |  .  \|     | \   / |     ||  |  ||     ||     |"
+startLogo17 byte "  |___|___| \___/ |__|__||__|\_||_____||____/     |__|\_||_____|  \_/  |_____||__|__||___,_||_____|"
+startLogo18 byte "                                                                                                   "
+startLogo19 byte "                               ready to revernge? Please press 's'                                 "
 startColor word lengthof startLogo0 DUP (2h)       							;初始畫面顏色。
-startPos COORD <10,10>    													    ;初始畫面初期繪製座標。
+startPos COORD <10,5>    													    ;初始畫面初期繪製座標。;初始畫面變數 monkey revenge
 
 score word 1              														;用以敵方飛機在移動第幾次時再出現下一台。
 
@@ -270,6 +278,123 @@ main proc
 		outputHandle,
 		offset startLogo10,
 		lengthof startLogo10,
+		startPos,
+		offset bytesWritten ;Line 132-274
+	inc startPos.Y
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		startPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset startLogo11,
+		lengthof startLogo11,
+		startPos,
+		offset bytesWritten
+	inc startPos.Y
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		startPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset startLogo12,
+		lengthof startLogo12,
+		startPos,
+		offset bytesWritten
+	inc startPos.Y
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		startPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset startLogo13,
+		lengthof startLogo13,
+		startPos,
+		offset bytesWritten
+	inc startPos.Y
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		startPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset startLogo14,
+		lengthof startLogo14,
+		startPos,
+		offset bytesWritten
+	inc startPos.Y
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		startPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset startLogo15,
+		lengthof startLogo15,
+		startPos,
+		offset bytesWritten
+	inc startPos.Y
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		startPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset startLogo16,
+		lengthof startLogo16,
+		startPos,
+		offset bytesWritten
+	inc startPos.Y
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		startPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset startLogo17,
+		lengthof startLogo17,
+		startPos,
+		offset bytesWritten
+	inc startPos.Y
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		startPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset startLogo18,
+		lengthof startLogo18,
+		startPos,
+		offset bytesWritten
+	inc startPos.Y
+    INVOKE WriteConsoleOutputAttribute,
+		outputHandle,
+		offset startColor,
+		lengthof startColor,
+		startPos,
+		offset count
+    INVOKE WriteConsoleOutputCharacter,
+		outputHandle,
+		offset startLogo19,
+		lengthof startLogo19,
 		startPos,
 		offset bytesWritten
 q:
