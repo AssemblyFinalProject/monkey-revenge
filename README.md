@@ -38,6 +38,10 @@
 1. 新增醫療包功能，吃到一個加 100 HP
 2. 落下不再加分，射中才會加分
 
+22/12/23 林晉宇
+1. 猴子移動超過邊界 ([已修](https://github.com/AssemblyFinalProject/forest-jam/commit/776da09d941a5854bd910da38b196349044269a6))
+2. 猴子殘影 ([已修](https://github.com/AssemblyFinalProject/forest-jam/commit/3e41e29f3ff7ca7848e3c82ebde7d2751f27f400))
+
 ## 已知Bug
 1. HP包閃爍
 2. 分數超過65000就會沒敵人
