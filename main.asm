@@ -65,7 +65,7 @@ allyHP dword 500 		    													;飛機血量。
 allyScore Dword 0																;飛機得分。
 bullet byte '('																	;子彈樣式。
 bulletPos COORD <?,?>															;子彈位置。
-bulletAttr word 0Bh																;子彈顏色。
+bulletAttr word 0Eh																;子彈顏色。
 bulletDisappearAttr word 00h													;子彈消失顏色。
 bulletshot BYTE 0																;子彈有沒有射中，0 = 0， 1 = 有喔
 
