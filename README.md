@@ -48,8 +48,12 @@
 2. 猴子殘影 ([已修](https://github.com/AssemblyFinalProject/forest-jam/commit/3e41e29f3ff7ca7848e3c82ebde7d2751f27f400))
 3. 修改logo -> [Monkey Revenge](https://github.com/AssemblyFinalProject/monky-revenge/commit/0969c521f925007f1af3aef2fb91575d5c373397)
 
+22/12/24 黃俞臻
+
+1. 修正HP閃爍
+
 ## 已知Bug
-1. HP包閃爍
+1. HP包閃爍 (已修)
 2. 分數超過65000就會沒敵人 (已修)
 3. 猴子移動超過邊界 ([已修](https://github.com/AssemblyFinalProject/forest-jam/commit/776da09d941a5854bd910da38b196349044269a6))
 4. 猴子殘影 ([已修](https://github.com/AssemblyFinalProject/forest-jam/commit/3e41e29f3ff7ca7848e3c82ebde7d2751f27f400))
