@@ -65,7 +65,7 @@ allyHP dword 500 		    													;飛機血量。
 allyScore Dword 0																;飛機得分。
 bullet byte '('																	;子彈樣式。
 bulletPos COORD <?,?>															;子彈位置。
-bulletAttr word 0Eh																;子彈顏色。
+bulletAttr word 0Bh																;子彈顏色。
 bulletDisappearAttr word 00h													;子彈消失顏色。
 bulletshot BYTE 0																;子彈有沒有射中，0 = 0， 1 = 有喔
 
@@ -580,8 +580,6 @@ control:
 				mov PutHPBag, 00h
 				mov Healed, 00h
 			.ENDIF
-			
-			INVOKE HPBagDisappear, HPBagPos
 		.ENDIF
 
 		INVOKE EnemyMove,enemy1Position             ;敵軍移動。
@@ -1918,7 +1916,6 @@ HPBagDisappear PROC, HPBagP:COORD
 HPBagDisappear ENDP
 
 BagMove PROC USES eax ebx ecx edx, HPBagP:COORD
-	INVOKE Sleep,15
 	INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
 		offset HPBagDisappearAttr,
