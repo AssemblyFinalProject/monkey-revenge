@@ -62,7 +62,7 @@ allyHP dword 500 		    													;猴子血量。
 allyScore Dword 0																;猴子得分。
 bullet byte '('																	;banana樣式。
 bulletPos COORD <?,?>															;banana位置。
-bulletAttr word 0Bh																;banana顏色。
+bulletAttr word 0Eh																;banana顏色。
 bulletDisappearAttr word 00h													;banana消失顏色。
 bulletshot BYTE 0																;banana有沒有射中，0 = 0， 1 = 有喔
 
