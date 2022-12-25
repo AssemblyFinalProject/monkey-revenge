@@ -1519,7 +1519,7 @@ EnemyMove proc USES eax ebx ecx edx,
     enemyP:coord
     add score,1
 
-	INVOKE Sleep,15
+	INVOKE Sleep,70
     
 	;擦掉佛祖。
 	dec enemyP.Y
