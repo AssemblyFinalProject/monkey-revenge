@@ -7,17 +7,14 @@ main	EQU start@0
 DetectMove proto								;偵測移動 直接使用 呼叫MovRight,MovLeft。
 MovRight proto									;右移。
 MovLeft proto									;左移。
-AllyRevive proto								;玩家復活。
-EnemyMove proto, enemyP:coord					;敵方移動。
-EnemyAttack proto,enemyX:word,enemyY:word 		;敵方射擊，呼叫AttackMove。
-AttackMove proto 								;敵方子彈移動。
-EnemyRevive proto								;敵方復活。
+AllyRevive proto								;猴子復活。
+EnemyMove proto, enemyP:coord					;佛祖移動。
 WriteHP proto                                   ;顯示血量。
 WriteScore proto                                ;顯示分數。
-enemyDisappear proto, enemyP:coord              ;消去敵方飛機。
-EnemyCrush proto, enemyP:coord					;撞到敵方飛機扣血。
-bulletMove proto								;子彈移動
-allyAttack proto, enemyP:COORD					;偵測子彈打到與否
+enemyDisappear proto, enemyP:coord              ;消去佛祖。
+EnemyCrush proto, enemyP:coord					;撞到佛祖扣血。
+bulletMove proto								;banana移動
+allyAttack proto, enemyP:COORD					;偵測banana打到與否
 CheckHP proto									;偵測生命值是否歸零
 HPBagDisappear proto, HPBagP:COORD				;消去HPBag
 BagMove proto, HPBagP:COORD						;HPBag移動
@@ -49,52 +46,49 @@ startLogo19 byte "                               準備報復佛祖了嗎? Pleas
 startColor word lengthof startLogo0 DUP (0Eh)       							;初始畫面顏色。
 startColor2 word lengthof startLogo0 DUP (0Bh)       							;初始字體顏色。
 startPos COORD <10,5>    													    ;初始畫面初期繪製座標。;初始畫面變數 monkey revenge
-score word 1              														;用以敵方飛機在移動第幾次時再出現下一台。
+score word 1              														;用以佛祖在移動第幾次時再出現。
 
-;飛機樣式。
+;猴子樣式。
 allyPlaneUp BYTE    "     __      "
 allyPlaneMid1 BYTE  "w  c(..)o    " 
 allyPlaneMid2 BYTE  " \__(-)      "
 allyPlaneDown BYTE  "    /(_)__)  "
-allyPlaneBlank BYTE "             "													;飛機消失字元
-allyAttr WORD 15 DUP(0Bh)														;飛機顏色。
-allyDisAttr WORD 15 DUP (00h)												;飛機消失顏色。
-allyPosition COORD <3Ch,25>														;飛機初始位置。
-allyCondition byte 1															;飛機狀態 1為活著,0為死掉復活中。
-allyHP dword 500 		    													;飛機血量。
-allyScore Dword 0																;飛機得分。
-bullet byte '('																	;子彈樣式。
-bulletPos COORD <?,?>															;子彈位置。
-bulletAttr word 0Bh																;子彈顏色。
-bulletDisappearAttr word 00h													;子彈消失顏色。
-bulletshot BYTE 0																;子彈有沒有射中，0 = 0， 1 = 有喔
+allyPlaneBlank BYTE "             "												;猴子消失字元
+allyAttr WORD 15 DUP(0Bh)														;猴子顏色。
+allyDisAttr WORD 15 DUP (00h)													;猴子消失顏色。
+allyPosition COORD <3Ch,25>														;猴子初始位置。
+allyCondition byte 1															;猴子狀態 1為活著,0為死掉復活中。
+allyHP dword 500 		    													;猴子血量。
+allyScore Dword 0																;猴子得分。
+bullet byte '('																	;banana樣式。
+bulletPos COORD <?,?>															;banana位置。
+bulletAttr word 0Bh																;banana顏色。
+bulletDisappearAttr word 00h													;banana消失顏色。
+bulletshot BYTE 0																;banana有沒有射中，0 = 0， 1 = 有喔
 
-;敵人樣式。
+;佛祖樣式。
 enemyTop BYTE "  _=_  "
 enemyBody BYTE "q(-_-)p"
 enemyBottom BYTE "'_\|/_`"
-enemyBlank BYTE "       "							;敵人消失字元
-enemyAttr word 7 DUP(0Ch)						;敵人飛機顏色。
-enemyDisappearAttr word 7 DUP(00h)				;敵人飛機消失顏色。
-enemyPosition COORD <60,0>						;敵人飛機初始位置。
+enemyBlank BYTE "       "							;佛祖消失字元
+enemyAttr word 7 DUP(0Ch)							;佛祖顏色。
+enemyDisappearAttr word 7 DUP(00h)					;佛祖消失顏色。
+enemyPosition COORD <60,0>							;佛祖初始位置。
 enemy1Position COORD <60,0>
 enemy2Position COORD <40,0>
 enemy3Position COORD <30,0>
 enemy4Position COORD <80,0>
 enemy5Position COORD <70,0>
 enemy6Position COORD <50,0>
-enemyCondition byte 1							;敵人飛機狀態 1為活著,0為被擊落。
-Attack byte '.'									;敵人子彈樣式。
-AttackPos COORD <?,?>							;敵人子彈位置。
-AttackAttr word 0Ah								;敵人子彈顏色。
-AttackDisappearAttr word 0						;敵人子彈消失顏色。
+enemyCondition byte 1							;佛祖狀態 1為活著,0為被擊落。
+
 
 outputHandle DWORD 0 							;CONSOLE 控制ID。
 bytesWritten DWORD ?							;回傳值。
 count DWORD 0									;回傳值。
-cellsWritten DWORD ?							;奇怪的回傳值。
+cellsWritten DWORD ?							
 
-input byte ?									;變數偵測是否按S。
+input byte ?									;變數偵測是否按s。
 inputMov byte ?									;變數偵測是否按i或p。
 inputQuit byte ?								;變數偵測是否按ESC。
 
@@ -111,7 +105,7 @@ ScoreAttr word 6 DUP(0Ah)                       ;分數顯示顏色。
 HPBag BYTE "+HP+"								;醫療包樣式
 HPBagPos COORD <60,0>							;醫療包位置
 HPBagAttr WORD 4 DUP (0Ah)						;醫療包顏色
-HPBagDis BYTE "    "						;醫療包消失樣式
+HPBagDis BYTE "    "							;醫療包消失樣式
 HPBagDisappearAttr WORD 4 DUP (00h)				;醫療包消失顏色
 PutHPBag BYTE 00h								;當 PutHPBag == 05h 時落下(每五回合)
 Healed BYTE 00h									;是否吃到HPBag
@@ -410,14 +404,6 @@ main proc
 		startPos,
 		offset bytesWritten
 ;==============================================================================================
-q:
-    call ReadChar                			 ;偵測要開始遊戲還是看介紹。
-    .if al=='s'
-		call Clrscr
-    jmp start
-    .else
-        jmp q
-    .endif
 p:
     call ReadChar                			   ;偵測要不要開始遊戲。
     .if al=='s'
@@ -523,7 +509,7 @@ start:
 
 SetBullet:
 
-	;設定子彈初始位置
+	;設定banana初始位置
 	mov ax, allyPosition.X
 	;add ax, 03h
 	mov bulletPos.X, ax
@@ -534,15 +520,15 @@ SetBullet:
 control:
 	
     .if allyScore>=0
-		;若敵軍到最下方，敵軍消失並從任意最上方位置重新出現。
-		.if enemy1Position.Y>24						  ;障礙物碰到最下方後
-			INVOKE enemyDisappear, enemy1Position     ;下方敵軍消失。
+		;若佛祖到最下方，佛祖消失並從任意最上方位置重新出現。
+		.if enemy1Position.Y>24						  ;佛祖碰到最下方後
+			INVOKE enemyDisappear, enemy1Position     ;下方佛祖消失。
             call WriteScore
 			mov eax, 100
 			call RandomRange
-            add ax,12                                 ;防止敵軍從分數、HP的位置出現。
-            mov enemy1Position.X,ax                   ;敵軍X座標設隨機位置。
-            mov enemy1Position.Y,0                    ;敵軍移到最上方。
+            add ax,12                                 ;防止佛祖從分數、HP的位置出現。
+            mov enemy1Position.X,ax                   ;佛祖X座標設隨機位置。
+            mov enemy1Position.Y,0                    ;佛祖移到最上方。
 			inc PutHPBag
         .endif
 
@@ -582,23 +568,23 @@ control:
 			.ENDIF
 		.ENDIF
 
-		INVOKE EnemyMove,enemy1Position             ;敵軍移動。
+		INVOKE EnemyMove,enemy1Position             ;佛祖移動。
 		INVOKE EnemyCrush,enemy1Position            ;判斷有沒有撞擊到。
-		INVOKE allyAttack, enemy1Position			;判斷有沒有被子彈打到
+		INVOKE allyAttack, enemy1Position			;判斷有沒有被banana打到
 		.IF bulletshot == 1							;如果打到，重設XY
 			mov eax,100
 			call RandomRange
-            add ax,12                                 ;防止敵軍從分數、HP的位置出現。
-            mov enemy1Position.X,ax                   ;敵軍X座標設隨機位置。
-            mov enemy1Position.Y,0                    ;敵軍移到最上方。
+            add ax,12                                 ;防止佛祖從分數、HP的位置出現。
+            mov enemy1Position.X,ax                   ;佛祖X座標設隨機位置。
+            mov enemy1Position.Y,0                    ;佛祖移到最上方。
 			mov bulletshot, 0
 		.ENDIF
 		.IF allyCondition == 0
 			mov eax,100
 			call RandomRange
-            add ax,12                                 ;防止敵軍從分數、HP的位置出現。
-            mov enemy1Position.X,ax                   ;敵軍X座標設隨機位置。
-            mov enemy1Position.Y,0                    ;敵軍移到最上方。
+            add ax,12                                 ;防止佛祖從分數、HP的位置出現。
+            mov enemy1Position.X,ax                   ;佛祖X座標設隨機位置。
+            mov enemy1Position.Y,0                    ;佛祖移到最上方。
 			mov allyCondition, 1					  ;解除無敵狀態
 		.ENDIF
         inc enemy1Position.Y
@@ -615,7 +601,7 @@ control:
         .endif
 		INVOKE EnemyMove,enemy2Position
 		INVOKE EnemyCrush,enemy2Position            ;判斷有沒有撞擊到。
-		INVOKE allyAttack, enemy2Position			;判斷有沒有被子彈打到
+		INVOKE allyAttack, enemy2Position			;判斷有沒有被banana打到
 		.IF bulletshot == 1							;如果打到，重設Y
 			mov eax, 100
             call RandomRange
@@ -646,7 +632,7 @@ control:
         .endif
 		INVOKE EnemyMove,enemy3Position
 		INVOKE EnemyCrush,enemy3Position            ;判斷有沒有撞擊到。
-		INVOKE allyAttack, enemy3Position			;判斷有沒有被子彈打到
+		INVOKE allyAttack, enemy3Position			;判斷有沒有被banana打到
 		.IF bulletshot == 1							;如果打到，重設Y
 			mov eax, 100
             call RandomRange
@@ -677,7 +663,7 @@ control:
 		.endif
 		INVOKE EnemyMove,enemy4Position
 		INVOKE EnemyCrush,enemy4Position            ;判斷有沒有撞擊到。
-		INVOKE allyAttack, enemy4Position			;判斷有沒有被子彈打到
+		INVOKE allyAttack, enemy4Position			;判斷有沒有被banana打到
 		.IF bulletshot == 1							;如果打到，重設Y
 			mov eax, 100
             call RandomRange
@@ -705,9 +691,9 @@ control:
 	INVOKE bulletMove
 	.ENDIF
 
-	dec bulletPos.Y									;子彈上移
+	dec bulletPos.Y									;banana上移
 
-	jmp control								    	;迴圈讓敵人下移。
+	jmp control								    	;迴圈讓佛祖下移。
 
 main endp
 
@@ -821,13 +807,13 @@ INVOKE GetStdHandle, STD_OUTPUT_HANDLE
     mov outputHandle, eax
     ;call Clrscr
 
-    mov allyCondition,0;				;飛機是否為無敵狀態。
+    mov allyCondition,0;				;猴子是否為無敵狀態。
 	mov ecx,3
 
 blink:
 	push ecx
 	
-    ;飛機繪製。
+    ;猴子繪製。
     INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
 		offset allyAttr,
@@ -883,7 +869,7 @@ blink:
 	sub allyPosition.Y,3				;y軸調回初始位置。
 	invoke Sleep,300					;延遲閃爍。
 
-	;飛機結束擦除。
+	;猴子結束擦除。
 	INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
 		offset allyDisAttr,
@@ -1001,7 +987,7 @@ blink:
 
 	sub allyPosition.Y,3				;y軸調回初始位置。
 
-    mov allyCondition,1					;設定飛機無敵狀態。
+    mov allyCondition,1					;設定猴子無敵狀態。
 					
     ret
 
@@ -1528,14 +1514,14 @@ L5:	INVOKE WriteConsoleOutputAttribute,
 	ret
 MovLeft endp
 
-;敵方移動。
+;佛祖移動。
 EnemyMove proc USES eax ebx ecx edx,
     enemyP:coord
     add score,1
 
 	INVOKE Sleep,15
     
-	;擦掉敵軍。
+	;擦掉佛祖。
 	dec enemyP.Y
 	INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
@@ -1576,9 +1562,9 @@ EnemyMove proc USES eax ebx ecx edx,
 		enemyP,
 		offset count
 
-    dec enemyP.Y               			;敵軍Y座標橋回正確位置。
+    dec enemyP.Y               			;佛祖Y座標回正確位置。
 	
-	;繪製敵軍。
+	;繪製佛祖。
 	INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
 		offset enemyAttr,
@@ -1618,126 +1604,22 @@ EnemyMove proc USES eax ebx ecx edx,
 		enemyP,
 		offset count
 
-	sub enemyP.Y, 2                      ;敵軍Y座標橋回正確位置。
+	sub enemyP.Y, 2                      ;佛祖Y座標回正確位置。
     ret
 EnemyMove endp
 
-;敵方射擊。
-EnemyAttack proc USES eax edx ecx ebx ,enemyX:word,enemyY:word
 
-    mov ax,enemyX
-    mov dx,enemyY						 ;傳入enemyPosition。
-	add ax,2							 ;座標移動到子彈該出現的位置。
-	add dx,3
-    mov AttackPos.X,ax
-    mov AttackPos.Y,dx					 ;子彈位置存入AttackPos。
-
-keep:
-	.if AttackPos.Y==22
-		mov bx,allyPosition.Y
-		mov cx,allyPosition.X			 ;allyPosition存入暫存器。
-		sub cx,AttackPos.X				 ;cx用於判斷子彈擊中飛機。
-	.endif
-	.IF AttackPos.Y!=30				
-		INVOKE AttackMove				 ;若子彈沒到最終位置，持續呼叫子彈移動。
-		jmp LOO
-	.ELSE
-		jmp endAttack
-	.ENDIF
-LOO:									 ;判斷子彈是否擊中飛機X軸。
-	.if cx == -1
-		jmp enddd
-	.elseif cx == -2
-		jmp enddd
-	.elseif cx == -3
-		jmp enddd
-	.elseif cx == -4
-		jmp enddd
-	.elseif cx == -5
-		jmp enddd
-	.elseif cx == -6
-		jmp enddd
-	.elseif cx == -7
-		jmp enddd
-	.elseif cx == -8
-		jmp enddd
-	.elseif cx == -9
-		jmp enddd
-	.elseif cx == -10
-		jmp enddd
-	.elseif cx == -11
-		jmp enddd
-	.elseif cx == 0
-		jmp enddd
-	.else
-		jmp keep
-	.endif
-enddd:
-	.if AttackPos.Y==bx					;進一步判斷子彈是否擊中飛機Y軸。
-		sub allyHP,100         			;擊中，減少血量。
-		INVOKE WriteHP          		;顯示血量。
-		jmp endddd
-	.else
-		jmp keep
-	.endif
-endddd:
-	.if allyCondition==1				;進一步判斷飛機是否處於無敵狀態。
-		invoke AllyRevive				;呼叫被擊中閃爍。
-		jmp endAttack
-	.endif
-endAttack:
-	INVOKE CheckHP
-    ret
-EnemyAttack endp
-
-;敵人子彈移動。
-AttackMove proc USES eax ebx ecx edx
-
-	;繪製子彈。
-	INVOKE WriteConsoleOutputAttribute,
-		outputHandle,
-		offset AttackAttr,
-		1,
-		AttackPos,
-		offset cellsWritten
-	INVOKE WriteConsoleOutputCharacter,
-		outputHandle,
-		offset Attack,
-		1,
-		AttackPos,
-		offset count
-	INVOKE DetectMove
-	INVOKE Sleep,10
-	
-	;擦除子彈。
-	INVOKE WriteConsoleOutputAttribute,
-		outputHandle,
-		offset AttackDisappearAttr,
-		1,
-		AttackPos,
-		offset cellsWritten
-	INVOKE WriteConsoleOutputCharacter,
-		outputHandle,
-		offset Attack,
-		1,
-		AttackPos,
-		offset count
-
-    inc AttackPos.Y				;增加子彈Y軸，往下飛
-
-    ret
-AttackMove endp
 
 EnemyCrush proc ,enemyP:COORD
 	mov cx, allyPosition.X
 	sub cx, enemyP.X
 	add cx, 07d
-	.IF enemyP.Y >= 16h					;敵軍到可以碰到友軍的範圍
+	.IF enemyP.Y >= 16h					;佛祖到可以碰到猴子的範圍
 		jmp LOO							;判斷x軸是否有碰到
 	.ELSE
 		jmp endCrush
 	.ENDIF
-LOO:									 ;判斷子彈是否擊中飛機X軸。
+LOO:									 ;判斷banana是否擊中佛祖X軸。
 	.if cx == 05h
 		jmp enddd
 	.endif
@@ -1783,13 +1665,13 @@ LOO:									 ;判斷子彈是否擊中飛機X軸。
 		jmp endCrush
 	.endif
 enddd:
-		.if allyCondition==1				;進一步判斷飛機是否處於無敵狀態。
+		.if allyCondition==1			;進一步判斷猴子是否處於無敵狀態。
 		invoke AllyRevive				;呼叫被擊中閃爍。
 		sub allyHP,100         			;擊中，減少血量。
 		INVOKE CheckHP
 		INVOKE WriteHP          		;顯示血量。
 		mov allyCondition, 0			;無敵狀態
-		INVOKE enemyDisappear, enemyP	;敵人消失
+		INVOKE enemyDisappear, enemyP	;佛祖消失
 		
 		jmp endCrush
 		.endif
@@ -1797,9 +1679,9 @@ endCrush:
     ret
 EnemyCrush ENDP
 
-;子彈移動
+;banana移動
 bulletMove PROC
-	;上移子彈Y，擦除舊子彈
+	;上移bananaY，擦除舊banana
 	inc bulletPos.Y
 	INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
@@ -1813,7 +1695,7 @@ bulletMove PROC
 		lengthof bullet,
 		bulletPos,
 		offset bytesWritten
-	;下移子彈Y，劃出新子彈
+	;下移bananaY，劃出新banana
 	dec bulletPos.Y
 	INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
@@ -1844,7 +1726,7 @@ bulletMove PROC
 	ret
 bulletMove ENDP
 
-;子彈是否打到敵軍
+;banana是否打到佛祖
 allyAttack PROC USES eax ebx ecx, enemyP:COORD
 	mov cx, bulletPos.X
 	sub cx, enemyP.X
@@ -1864,7 +1746,7 @@ allyAttack PROC USES eax ebx ecx, enemyP:COORD
 	.ELSE
 		jmp endAllyAttack
 	.ENDIF
-LOO:									 ;判斷子彈是否擊中敵軍X軸。
+LOO:									 ;判斷banana是否擊中佛祖X軸。
 	.if cx == 05h
 		jmp enddd
 	.endif
@@ -1889,7 +1771,7 @@ enddd:
 		add allyScore,1000         	;擊中，加分。
 		INVOKE WriteScore
 		inc enemyP.Y
-		INVOKE enemyDisappear, enemyP	;敵人消失
+		INVOKE enemyDisappear, enemyP	;佛祖消失
 		mov bulletshot, 01h
 		jmp endAllyAttack
 endAllyAttack:
@@ -1949,12 +1831,12 @@ BagCrush PROC, HPBagP:COORD
 	mov cx, allyPosition.X
 	sub cx, HPBagP.X
 	add cx, 07d
-	.IF HPBagP.Y >= 16h					;HPBag到可以碰到友軍的範圍
+	.IF HPBagP.Y >= 16h					;HPBag到可以碰到猴子的範圍
 		jmp LOO							;判斷x軸是否有碰到
 	.ELSE
 		jmp endCrush
 	.ENDIF
-	LOO:									 ;判斷HPBag是否擊中飛機X軸。
+	LOO:									 ;判斷HPBag是否擊中猴子X軸。
 		.if cx == 05h
 			jmp enddd
 		.endif
@@ -2000,7 +1882,7 @@ BagCrush PROC, HPBagP:COORD
 			add allyHP,100         			;吃到，增加血量。
 			INVOKE WriteHP          		;顯示血量。
 			mov Healed, 01h					;無敵狀態
-			INVOKE HPBagDisappear, HPBagP	;敵人消失
+			INVOKE HPBagDisappear, HPBagP	;佛祖消失
 		
 			jmp endCrush
 	endCrush:
