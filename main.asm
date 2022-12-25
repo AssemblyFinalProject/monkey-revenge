@@ -21,7 +21,7 @@ BagMove proto, HPBagP:COORD						;HPBag移動
 BagCrush proto, HPBagP:COORD					;偵測是否
 
 .data
-titleStr byte "Forest Jam",0         ;主控台視窗標題。
+titleStr byte "Monkey Revenge",0         ;主控台視窗標題。
 
 startLogo0 byte  "             _      `-._     `-.     `.   \      :      /   .'     .-'     _.-'      _             "
 startLogo1 byte  "              `--._     `-._    `-.    `.  `.    :    .'  .'    .-'    _.-'     _.--'              "
