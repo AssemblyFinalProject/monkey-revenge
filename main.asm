@@ -993,9 +993,8 @@ blink:
 
 AllyRevive endp
 
-CheckHP PROC
-
 ;判斷HP是否為0，若是則繪製結束畫面。
+CheckHP PROC
 .if allyHP == 0
 
 	call Clrscr
@@ -1608,8 +1607,7 @@ EnemyMove proc USES eax ebx ecx edx,
     ret
 EnemyMove endp
 
-
-
+;判斷佛祖是否有碰到猴子
 EnemyCrush proc ,enemyP:COORD
 	mov cx, allyPosition.X
 	sub cx, enemyP.X
@@ -1668,7 +1666,7 @@ enddd:
 		.if allyCondition==1			;進一步判斷猴子是否處於無敵狀態。
 		invoke AllyRevive				;呼叫被擊中閃爍。
 		sub allyHP,100         			;擊中，減少血量。
-		INVOKE CheckHP
+		INVOKE CheckHP					;確認HP不為零
 		INVOKE WriteHP          		;顯示血量。
 		mov allyCondition, 0			;無敵狀態
 		INVOKE enemyDisappear, enemyP	;佛祖消失
@@ -1778,6 +1776,7 @@ endAllyAttack:
     ret
 allyAttack ENDP
 
+;HP包消失
 HPBagDisappear PROC, HPBagP:COORD
 	
 	INVOKE WriteConsoleOutputAttribute,
@@ -1797,6 +1796,7 @@ HPBagDisappear PROC, HPBagP:COORD
 	ret
 HPBagDisappear ENDP
 
+;HP包移動
 BagMove PROC USES eax ebx ecx edx, HPBagP:COORD
 	INVOKE WriteConsoleOutputAttribute,
 		outputHandle,
@@ -1827,6 +1827,7 @@ BagMove PROC USES eax ebx ecx edx, HPBagP:COORD
 	ret
 BagMove ENDP
 
+;判斷HP包是否接觸到猴子
 BagCrush PROC, HPBagP:COORD
 	mov cx, allyPosition.X
 	sub cx, HPBagP.X
